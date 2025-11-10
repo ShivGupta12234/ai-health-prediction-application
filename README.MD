@@ -230,5 +230,4 @@ This project is developed as part of an academic curriculum at Pranveer Singh In
 - Tailwind CSS team
 
 ---
-
 **⭐ If you find this project helpful, please give it a star!**
