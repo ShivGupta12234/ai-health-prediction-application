@@ -44,3 +44,10 @@ coverage/
 .cache/
 tmp/
 temp/
+.env
+*.env
+*.env.*
+.env.local
+backend/.env
+frontend/.env
+EOF
