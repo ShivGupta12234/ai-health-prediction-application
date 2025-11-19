@@ -21,7 +21,9 @@ const Navbar = () => {
               className="flex items-center space-x-2 hover:opacity-80 transition-opacity"
             >
               <Activity className="w-8 h-8 text-primary-500" />
-              <span className="text-xl font-bold text-gray-800">HealthAI</span>
+              <span className="text-xl font-bold text-gray-800">
+                HealthMateAI
+              </span>
             </Link>
           </div>
 
