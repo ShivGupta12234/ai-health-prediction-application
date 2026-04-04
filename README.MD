@@ -1,6 +1,6 @@
 # 🏥 AI-Powered Health Prediction Application
 
-An intelligent full-stack healthcare application that leverages AI and machine learning to predict diseases, assess mortality risks, and provide personalized health recommendations.
+An Intelligent full-stack healthcare application that leverages AI and machine learning to predict diseases, assess mortality risks, and provide personalized health recommendations.
 
 ## 🌟 Features
 
