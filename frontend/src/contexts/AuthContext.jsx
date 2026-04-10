@@ -15,7 +15,7 @@ export const AuthProvider = ({ children }) => {
       try {
         setUser(JSON.parse(userData));
       } catch (error) {
-        console.error("Error parsing user data:", error);
+        // Corrupted localStorage data — clean up
         localStorage.removeItem("user");
         localStorage.removeItem("token");
       }
@@ -24,37 +24,25 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const login = async (email, password) => {
-    try {
-      console.log("Login attempt:", { email });
-      const response = await authAPI.login({ email, password });
-      const { token, ...userData } = response.data;
+    const response = await authAPI.login({ email, password });
+    const { token, ...userData } = response.data;
 
-      localStorage.setItem("token", token);
-      localStorage.setItem("user", JSON.stringify(userData));
-      setUser(userData);
+    localStorage.setItem("token", token);
+    localStorage.setItem("user", JSON.stringify(userData));
+    setUser(userData);
 
-      return response.data;
-    } catch (error) {
-      console.error("Login error:", error.response?.data || error.message);
-      throw error;
-    }
+    return response.data;
   };
 
   const register = async (userData) => {
-    try {
-      console.log("Register attempt:", userData);
-      const response = await authAPI.register(userData);
-      const { token, ...user } = response.data;
+    const response = await authAPI.register(userData);
+    const { token, ...user } = response.data;
 
-      localStorage.setItem("token", token);
-      localStorage.setItem("user", JSON.stringify(user));
-      setUser(user);
+    localStorage.setItem("token", token);
+    localStorage.setItem("user", JSON.stringify(user));
+    setUser(user);
 
-      return response.data;
-    } catch (error) {
-      console.error("Register error:", error.response?.data || error.message);
-      throw error;
-    }
+    return response.data;
   };
 
   const logout = () => {
@@ -63,8 +51,15 @@ export const AuthProvider = ({ children }) => {
     setUser(null);
   };
 
+  // Update local user data (e.g., after profile changes)
+  const updateUser = (updatedData) => {
+    const newUser = { ...user, ...updatedData };
+    localStorage.setItem("user", JSON.stringify(newUser));
+    setUser(newUser);
+  };
+
   return (
-    <AuthContext.Provider value={{ user, login, register, logout, loading }}>
+    <AuthContext.Provider value={{ user, login, register, logout, updateUser, loading }}>
       {children}
     </AuthContext.Provider>
   );

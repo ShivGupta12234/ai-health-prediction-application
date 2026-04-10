@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { predictionsAPI } from "../services/api";
 import { useAuth } from "../contexts/AuthContext";
+import { motion } from "framer-motion";
 import {
   Activity,
   TrendingUp,
@@ -11,6 +12,9 @@ import {
   BarChart3,
   User,
   Heart,
+  ArrowRight,
+  Sparkles,
+  Stethoscope,
 } from "lucide-react";
 import {
   PieChart,
@@ -23,9 +27,19 @@ import {
   XAxis,
   YAxis,
   CartesianGrid,
-  Legend,
 } from "recharts";
 import LoadingSpinner from "../components/common/LoadingSpinner";
+import GlassCard from "../components/common/GlassCard";
+import AnimatedCounter from "../components/common/AnimatedCounter";
+
+const container = {
+  hidden: { opacity: 0 },
+  show: { opacity: 1, transition: { staggerChildren: 0.08 } },
+};
+const item = {
+  hidden: { opacity: 0, y: 20 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.5 } },
+};
 
 const Dashboard = () => {
   const { user } = useAuth();
@@ -57,128 +71,158 @@ const Dashboard = () => {
 
   const getRiskColor = (risk) => {
     switch (risk) {
-      case "Low":
-        return "bg-secondary-100 text-secondary-700";
-      case "Medium":
-        return "bg-yellow-100 text-yellow-700";
-      case "High":
-        return "bg-orange-100 text-orange-700";
-      case "Critical":
-        return "bg-danger-100 text-danger-700";
-      default:
-        return "bg-gray-100 text-gray-700";
+      case "Low": return "text-neon-green bg-neon-green/10 border-neon-green/20";
+      case "Medium": return "text-yellow-400 bg-yellow-400/10 border-yellow-400/20";
+      case "High": return "text-neon-orange bg-neon-orange/10 border-neon-orange/20";
+      case "Critical": return "text-danger-400 bg-danger/10 border-danger/20";
+      default: return "text-slate-400 bg-white/5 border-white/10";
     }
   };
 
   const COLORS = {
-    Low: "#10B981",
-    Medium: "#F59E0B",
-    High: "#F97316",
-    Critical: "#EF4444",
+    Low: "#4ade80",
+    Medium: "#facc15",
+    High: "#fb923c",
+    Critical: "#f43f5e",
+  };
+
+  const CustomTooltip = ({ active, payload }) => {
+    if (active && payload && payload.length) {
+      return (
+        <div className="glass-card px-4 py-3 text-sm">
+          <p className="text-white font-medium">{payload[0].name}: {payload[0].value}</p>
+        </div>
+      );
+    }
+    return null;
   };
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <LoadingSpinner size="large" />
+      <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center">
+        <LoadingSpinner size="large" text="Loading your dashboard..." />
       </div>
     );
   }
 
   const riskChartData = stats
     ? Object.entries(stats.riskDistribution)
-        .map(([key, value]) => ({
-          name: key,
-          value,
-          count: value,
-        }))
+        .map(([key, value]) => ({ name: key, value, count: value }))
         .filter((item) => item.value > 0)
     : [];
 
+  const quickStats = [
+    {
+      label: "Total Predictions",
+      value: stats?.totalPredictions || 0,
+      icon: <BarChart3 className="w-6 h-6" />,
+      gradient: "from-accent to-accent-600",
+      shadowColor: "shadow-accent/30",
+    },
+    {
+      label: "Low Risk",
+      value: stats?.riskDistribution?.Low || 0,
+      icon: <Activity className="w-6 h-6" />,
+      gradient: "from-neon-green to-emerald-600",
+      shadowColor: "shadow-neon-green/30",
+    },
+    {
+      label: "High Risk",
+      value: (stats?.riskDistribution?.High || 0) + (stats?.riskDistribution?.Critical || 0),
+      icon: <AlertTriangle className="w-6 h-6" />,
+      gradient: "from-neon-orange to-orange-600",
+      shadowColor: "shadow-neon-orange/30",
+    },
+    {
+      label: "Profile",
+      value: null,
+      display: `${user?.age || "N/A"} yrs, ${user?.gender || "N/A"}`,
+      icon: <User className="w-6 h-6" />,
+      gradient: "from-neon-purple to-violet-600",
+      shadowColor: "shadow-neon-purple/30",
+    },
+  ];
+
   return (
-    <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-[calc(100vh-4rem)] py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            Welcome back, {user?.name}!
-          </h1>
-          <p className="text-gray-600">
-            Here's your health overview and prediction history
-          </p>
-        </div>
+        <motion.div
+          className="mb-8"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <div className="flex items-center justify-between flex-wrap gap-4">
+            <div>
+              <h1 className="text-2xl sm:text-3xl font-bold text-white mb-1 flex items-center gap-2">
+                Welcome back, <span className="gradient-text">{user?.name}</span>
+                <Sparkles className="w-6 h-6 text-accent-300" />
+              </h1>
+              <p className="text-slate-400">
+                Here's your health overview and prediction history
+              </p>
+            </div>
+            <Link
+              to="/predict"
+              className="btn-primary flex items-center space-x-2"
+            >
+              <Stethoscope className="w-4 h-4" />
+              <span>New Prediction</span>
+            </Link>
+          </div>
+        </motion.div>
 
         {error && (
-          <div className="mb-6 p-4 bg-danger-50 border border-danger-200 rounded-lg text-danger-700">
+          <div className="mb-6 p-4 bg-danger/10 border border-danger/20 rounded-xl text-danger-300">
             {error}
           </div>
         )}
 
         {/* Quick Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <div className="card bg-gradient-to-br from-primary-500 to-primary-600 text-white">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-primary-100 text-sm mb-1">
-                  Total Predictions
-                </p>
-                <p className="text-3xl font-bold">
-                  {stats?.totalPredictions || 0}
-                </p>
-              </div>
-              <BarChart3 className="w-12 h-12 text-primary-200" />
-            </div>
-          </div>
+        <motion.div
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8"
+          variants={container}
+          initial="hidden"
+          animate="show"
+        >
+          {quickStats.map((stat, index) => (
+            <motion.div key={index} variants={item}>
+              <GlassCard className="p-5" delay={0}>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-xs text-slate-500 uppercase tracking-wider mb-1 font-medium">
+                      {stat.label}
+                    </p>
+                    {stat.value !== null ? (
+                      <p className="text-2xl font-bold text-white">
+                        <AnimatedCounter end={stat.value} />
+                      </p>
+                    ) : (
+                      <p className="text-lg font-bold text-white">
+                        {stat.display}
+                      </p>
+                    )}
+                  </div>
+                  <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${stat.gradient} flex items-center justify-center text-white shadow-lg ${stat.shadowColor}`}>
+                    {stat.icon}
+                  </div>
+                </div>
+              </GlassCard>
+            </motion.div>
+          ))}
+        </motion.div>
 
-          <div className="card bg-gradient-to-br from-secondary-500 to-secondary-600 text-white">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-secondary-100 text-sm mb-1">Low Risk</p>
-                <p className="text-3xl font-bold">
-                  {stats?.riskDistribution.Low || 0}
-                </p>
-              </div>
-              <Activity className="w-12 h-12 text-secondary-200" />
-            </div>
-          </div>
-
-          <div className="card bg-gradient-to-br from-orange-500 to-orange-600 text-white">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-orange-100 text-sm mb-1">High Risk</p>
-                <p className="text-3xl font-bold">
-                  {(stats?.riskDistribution.High || 0) +
-                    (stats?.riskDistribution.Critical || 0)}
-                </p>
-              </div>
-              <AlertTriangle className="w-12 h-12 text-orange-200" />
-            </div>
-          </div>
-
-          <div className="card bg-gradient-to-br from-purple-500 to-purple-600 text-white">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-purple-100 text-sm mb-1">Profile</p>
-                <p className="text-xl font-bold">
-                  {user?.age || "N/A"} yrs, {user?.gender || "N/A"}
-                </p>
-              </div>
-              <User className="w-12 h-12 text-purple-200" />
-            </div>
-          </div>
-        </div>
-
-        {/* Charts and Recent Predictions */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
-          {/* Risk Distribution Chart */}
+        {/* Charts */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
           {riskChartData.length > 0 && (
-            <div className="lg:col-span-1">
-              <div className="card">
-                <h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center">
-                  <Heart className="w-5 h-5 mr-2 text-danger-500" />
+            <>
+              <GlassCard className="p-6 lg:col-span-1">
+                <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+                  <Heart className="w-5 h-5 text-danger-400" />
                   Risk Distribution
                 </h2>
-                <ResponsiveContainer width="100%" height={280}>
+                <ResponsiveContainer width="100%" height={250}>
                   <PieChart>
                     <Pie
                       data={riskChartData}
@@ -188,90 +232,75 @@ const Dashboard = () => {
                       label={({ name, percent }) =>
                         `${name}: ${(percent * 100).toFixed(0)}%`
                       }
-                      outerRadius={90}
+                      outerRadius={85}
+                      innerRadius={40}
                       fill="#8884d8"
                       dataKey="value"
+                      stroke="none"
                     >
                       {riskChartData.map((entry, index) => (
                         <Cell key={`cell-${index}`} fill={COLORS[entry.name]} />
                       ))}
                     </Pie>
-                    <Tooltip />
+                    <Tooltip content={<CustomTooltip />} />
                   </PieChart>
                 </ResponsiveContainer>
                 <div className="mt-4 grid grid-cols-2 gap-2">
                   {riskChartData.map((item, index) => (
                     <div key={index} className="flex items-center space-x-2">
                       <div
-                        className="w-3 h-3 rounded-full"
+                        className="w-2.5 h-2.5 rounded-full"
                         style={{ backgroundColor: COLORS[item.name] }}
                       />
-                      <span className="text-sm text-gray-600">
+                      <span className="text-xs text-slate-400">
                         {item.name}: {item.count}
                       </span>
                     </div>
                   ))}
                 </div>
-              </div>
-            </div>
-          )}
+              </GlassCard>
 
-          {/* Bar Chart - Risk Levels */}
-          {riskChartData.length > 0 && (
-            <div className="lg:col-span-2">
-              <div className="card">
-                <h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center">
-                  <BarChart3 className="w-5 h-5 mr-2 text-primary-500" />
+              <GlassCard className="p-6 lg:col-span-2">
+                <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+                  <BarChart3 className="w-5 h-5 text-accent-300" />
                   Risk Level Analysis
                 </h2>
-                <ResponsiveContainer width="100%" height={280}>
+                <ResponsiveContainer width="100%" height={250}>
                   <BarChart data={riskChartData}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="name" />
-                    <YAxis />
-                    <Tooltip />
-                    <Legend />
-                    <Bar
-                      dataKey="count"
-                      fill="#3B82F6"
-                      name="Predictions Count"
-                    >
+                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
+                    <XAxis dataKey="name" tick={{ fill: "#94a3b8", fontSize: 12 }} axisLine={{ stroke: "rgba(255,255,255,0.1)" }} />
+                    <YAxis tick={{ fill: "#94a3b8", fontSize: 12 }} axisLine={{ stroke: "rgba(255,255,255,0.1)" }} />
+                    <Tooltip content={<CustomTooltip />} />
+                    <Bar dataKey="count" name="Predictions" radius={[8, 8, 0, 0]}>
                       {riskChartData.map((entry, index) => (
                         <Cell key={`cell-${index}`} fill={COLORS[entry.name]} />
                       ))}
                     </Bar>
                   </BarChart>
                 </ResponsiveContainer>
-              </div>
-            </div>
+              </GlassCard>
+            </>
           )}
         </div>
 
         {/* Recent Predictions */}
-        <div className="card">
+        <GlassCard className="p-6 mb-8">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-semibold text-gray-900 flex items-center">
-              <Activity className="w-5 h-5 mr-2 text-primary-500" />
+            <h2 className="text-lg font-semibold text-white flex items-center gap-2">
+              <Activity className="w-5 h-5 text-accent-300" />
               Recent Health Assessments
             </h2>
-            <Link
-              to="/predict"
-              className="btn-primary flex items-center space-x-2"
-            >
-              <Plus className="w-4 h-4" />
-              <span>New Prediction</span>
-            </Link>
           </div>
 
           {predictions.length === 0 ? (
-            <div className="text-center py-12">
-              <div className="inline-flex items-center justify-center w-20 h-20 bg-gray-100 rounded-full mb-4">
-                <Activity className="w-10 h-10 text-gray-400" />
+            <div className="text-center py-16">
+              <div className="w-20 h-20 mx-auto rounded-3xl bg-white/[0.04] flex items-center justify-center mb-4">
+                <Activity className="w-10 h-10 text-slate-600" />
               </div>
-              <h3 className="text-lg font-medium text-gray-900 mb-2">
+              <h3 className="text-lg font-medium text-white mb-2">
                 No Predictions Yet
               </h3>
-              <p className="text-gray-600 mb-6">
+              <p className="text-slate-500 mb-6">
                 Start your health journey by creating your first prediction
               </p>
               <Link
@@ -283,155 +312,131 @@ const Dashboard = () => {
               </Link>
             </div>
           ) : (
-            <div className="space-y-4">
-              {predictions.map((prediction) => (
-                <Link
+            <div className="space-y-3">
+              {predictions.map((prediction, i) => (
+                <motion.div
                   key={prediction._id}
-                  to="/result"
-                  state={{ prediction }}
-                  className="block p-5 bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg hover:from-gray-100 hover:to-gray-200 transition-all duration-200 border border-gray-200"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.05 }}
                 >
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <div className="flex items-center space-x-3 mb-2">
-                        <h3 className="font-semibold text-lg text-gray-900">
-                          {prediction.predictedDisease}
-                        </h3>
-                        <span
-                          className={`px-3 py-1 rounded-full text-xs font-semibold ${getRiskColor(
-                            prediction.mortalityRisk?.risk
-                          )}`}
-                        >
-                          {prediction.mortalityRisk?.risk} Risk
-                        </span>
-                      </div>
-                      <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600 mb-3">
-                        <div className="flex items-center space-x-1">
-                          <Calendar className="w-4 h-4" />
-                          <span>
-                            {new Date(prediction.createdAt).toLocaleDateString(
-                              "en-US",
-                              {
-                                month: "short",
-                                day: "numeric",
-                                year: "numeric",
-                              }
-                            )}
+                  <Link
+                    to="/result"
+                    state={{ prediction }}
+                    className="block p-4 rounded-xl bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.06] hover:border-white/[0.12] transition-all duration-300 group"
+                  >
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-3 mb-2 flex-wrap">
+                          <h3 className="font-semibold text-white group-hover:text-accent-300 transition-colors">
+                            {prediction.predictedDisease}
+                          </h3>
+                          <span
+                            className={`px-2.5 py-0.5 rounded-lg text-xs font-semibold border ${getRiskColor(
+                              prediction.mortalityRisk?.risk
+                            )}`}
+                          >
+                            {prediction.mortalityRisk?.risk} Risk
                           </span>
                         </div>
-                        <div className="flex items-center space-x-1">
-                          <TrendingUp className="w-4 h-4 text-primary-500" />
-                          <span className="font-medium text-primary-600">
-                            {prediction.confidence}% confidence
-                          </span>
-                        </div>
-                        {prediction.mortalityRisk?.probability && (
-                          <div className="flex items-center space-x-1">
-                            <AlertTriangle className="w-4 h-4 text-orange-500" />
-                            <span>
-                              {prediction.mortalityRisk.probability.toFixed(1)}%
-                              risk probability
-                            </span>
+                        <div className="flex flex-wrap items-center gap-4 text-xs text-slate-500">
+                          <div className="flex items-center gap-1">
+                            <Calendar className="w-3.5 h-3.5" />
+                            {new Date(prediction.createdAt).toLocaleDateString("en-US", {
+                              month: "short", day: "numeric", year: "numeric",
+                            })}
                           </div>
-                        )}
+                          <div className="flex items-center gap-1 text-accent-400">
+                            <TrendingUp className="w-3.5 h-3.5" />
+                            {prediction.confidence}% confidence
+                          </div>
+                          {prediction.mortalityRisk?.probability && (
+                            <div className="flex items-center gap-1 text-neon-orange">
+                              <AlertTriangle className="w-3.5 h-3.5" />
+                              {prediction.mortalityRisk.probability.toFixed(1)}% risk
+                            </div>
+                          )}
+                        </div>
+                        <div className="flex items-center gap-2 mt-2">
+                          <Activity className="w-3.5 h-3.5 text-slate-600 flex-shrink-0" />
+                          <p className="text-xs text-slate-500 truncate">
+                            {prediction.symptoms.slice(0, 4).join(", ")}
+                            {prediction.symptoms.length > 4 && ` +${prediction.symptoms.length - 4} more`}
+                          </p>
+                        </div>
                       </div>
-                      <div className="flex items-start space-x-2">
-                        <Activity className="w-4 h-4 text-gray-400 mt-0.5 flex-shrink-0" />
-                        <p className="text-sm text-gray-600">
-                          <span className="font-medium">Symptoms:</span>{" "}
-                          {prediction.symptoms.slice(0, 4).join(", ")}
-                          {prediction.symptoms.length > 4 &&
-                            ` +${prediction.symptoms.length - 4} more`}
-                        </p>
-                      </div>
+                      <ArrowRight className="w-5 h-5 text-slate-600 group-hover:text-accent-300 transition-colors flex-shrink-0 ml-4 mt-1" />
                     </div>
-                    <div className="ml-4">
-                      <div className="w-10 h-10 bg-primary-100 rounded-full flex items-center justify-center">
-                        <TrendingUp className="w-5 h-5 text-primary-600" />
-                      </div>
-                    </div>
-                  </div>
-                </Link>
+                  </Link>
+                </motion.div>
               ))}
 
               {predictions.length >= 5 && (
-                <div className="text-center pt-4">
-                  <p className="text-sm text-gray-500">
-                    Showing {predictions.length} most recent predictions
-                  </p>
-                </div>
+                <p className="text-center text-xs text-slate-600 pt-2">
+                  Showing {predictions.length} most recent predictions
+                </p>
               )}
             </div>
           )}
-        </div>
+        </GlassCard>
 
-        {/* Health Insights */}
-        {stats &&
-          stats.commonSymptoms &&
-          Object.keys(stats.commonSymptoms).length > 0 && (
-            <div className="card mt-8">
-              <h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center">
-                <Activity className="w-5 h-5 mr-2 text-secondary-500" />
-                Most Common Symptoms
-              </h2>
-              <div className="flex flex-wrap gap-2">
-                {Object.entries(stats.commonSymptoms)
-                  .sort(([, a], [, b]) => b - a)
-                  .slice(0, 10)
-                  .map(([symptom, count]) => (
-                    <div
-                      key={symptom}
-                      className="px-4 py-2 bg-secondary-50 text-secondary-700 rounded-full text-sm font-medium border border-secondary-200"
-                    >
-                      {symptom} ({count})
-                    </div>
-                  ))}
-              </div>
-            </div>
-          )}
-
-        {/* Recent Conditions */}
-        {stats &&
-          stats.recentConditions &&
-          stats.recentConditions.length > 0 && (
-            <div className="card mt-8">
-              <h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center">
-                <Heart className="w-5 h-5 mr-2 text-danger-500" />
-                Recent Conditions Timeline
-              </h2>
-              <div className="space-y-3">
-                {stats.recentConditions.map((condition, index) => (
-                  <div
-                    key={index}
-                    className="flex items-center space-x-4 p-3 bg-gray-50 rounded-lg"
+        {/* Common Symptoms */}
+        {stats?.commonSymptoms && Object.keys(stats.commonSymptoms).length > 0 && (
+          <GlassCard className="p-6 mb-8">
+            <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+              <Activity className="w-5 h-5 text-neon-green" />
+              Most Common Symptoms
+            </h2>
+            <div className="flex flex-wrap gap-2">
+              {Object.entries(stats.commonSymptoms)
+                .sort(([, a], [, b]) => b - a)
+                .slice(0, 10)
+                .map(([symptom, count]) => (
+                  <span
+                    key={symptom}
+                    className="px-3 py-1.5 bg-neon-green/10 text-neon-green border border-neon-green/20 rounded-lg text-xs font-medium"
                   >
-                    <div className="flex-shrink-0 w-2 h-2 bg-primary-500 rounded-full"></div>
-                    <div className="flex-1">
-                      <div className="flex items-center justify-between">
-                        <span className="font-medium text-gray-900">
-                          {condition.disease}
-                        </span>
-                        <span
-                          className={`px-2 py-1 rounded text-xs font-semibold ${getRiskColor(
-                            condition.risk
-                          )}`}
-                        >
-                          {condition.risk}
-                        </span>
-                      </div>
-                      <span className="text-sm text-gray-500">
+                    {symptom} ({count})
+                  </span>
+                ))}
+            </div>
+          </GlassCard>
+        )}
+
+        {/* Recent Conditions Timeline */}
+        {stats?.recentConditions?.length > 0 && (
+          <GlassCard className="p-6">
+            <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+              <Heart className="w-5 h-5 text-danger-400" />
+              Recent Conditions Timeline
+            </h2>
+            <div className="space-y-3">
+              {stats.recentConditions.map((condition, index) => (
+                <div
+                  key={index}
+                  className="flex items-center gap-4 p-3 rounded-xl bg-white/[0.03] border border-white/[0.05]"
+                >
+                  <div className="w-2 h-2 bg-accent rounded-full flex-shrink-0" />
+                  <div className="flex-1 flex items-center justify-between flex-wrap gap-2">
+                    <span className="text-sm font-medium text-white">
+                      {condition.disease}
+                    </span>
+                    <div className="flex items-center gap-3">
+                      <span className={`px-2 py-0.5 rounded text-xs font-semibold border ${getRiskColor(condition.risk)}`}>
+                        {condition.risk}
+                      </span>
+                      <span className="text-xs text-slate-500">
                         {new Date(condition.date).toLocaleDateString("en-US", {
-                          month: "long",
-                          day: "numeric",
-                          year: "numeric",
+                          month: "short", day: "numeric", year: "numeric",
                         })}
                       </span>
                     </div>
                   </div>
-                ))}
-              </div>
+                </div>
+              ))}
             </div>
-          )}
+          </GlassCard>
+        )}
       </div>
     </div>
   );

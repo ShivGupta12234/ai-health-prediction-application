@@ -1,42 +1,55 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 
-const userSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: true,
-    trim: true,
-  },
-  email: {
-    type: String,
-    required: true,
-    unique: true,
-    lowercase: true,
-  },
-  password: {
-    type: String,
-    required: true,
-  },
-  age: {
-    type: Number,
-    min: 0,
-  },
-  gender: {
-    type: String,
-    enum: ["male", "female", "other"],
-  },
-  medicalHistory: [
-    {
-      condition: String,
-      diagnosedDate: Date,
-      notes: String,
+const userSchema = new mongoose.Schema(
+  {
+    name: {
+      type: String,
+      required: [true, "Name is required"],
+      trim: true,
+      minlength: [2, "Name must be at least 2 characters"],
+      maxlength: [50, "Name cannot exceed 50 characters"],
     },
-  ],
-  createdAt: {
-    type: Date,
-    default: Date.now,
+    email: {
+      type: String,
+      required: [true, "Email is required"],
+      unique: true,
+      lowercase: true,
+      trim: true,
+      match: [
+        /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+        "Please provide a valid email address",
+      ],
+    },
+    password: {
+      type: String,
+      required: [true, "Password is required"],
+      minlength: [6, "Password must be at least 6 characters"],
+    },
+    age: {
+      type: Number,
+      min: [1, "Age must be at least 1"],
+      max: [120, "Age cannot exceed 120"],
+    },
+    gender: {
+      type: String,
+      enum: {
+        values: ["male", "female", "other"],
+        message: "Gender must be male, female, or other",
+      },
+    },
+    medicalHistory: [
+      {
+        condition: String,
+        diagnosedDate: Date,
+        notes: String,
+      },
+    ],
   },
-});
+  {
+    timestamps: true, // auto createdAt + updatedAt
+  }
+);
 
 // Hash password before saving
 userSchema.pre("save", async function (next) {
@@ -48,6 +61,13 @@ userSchema.pre("save", async function (next) {
 // Compare password method
 userSchema.methods.comparePassword = async function (candidatePassword) {
   return await bcrypt.compare(candidatePassword, this.password);
+};
+
+// Remove password from JSON output
+userSchema.methods.toJSON = function () {
+  const user = this.toObject();
+  delete user.password;
+  return user;
 };
 
 module.exports = mongoose.model("User", userSchema);

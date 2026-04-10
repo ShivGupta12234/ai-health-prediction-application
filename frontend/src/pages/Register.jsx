@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
+import { motion } from "framer-motion";
+import toast from "react-hot-toast";
 import {
   UserPlus,
   Mail,
@@ -9,6 +11,8 @@ import {
   Calendar,
   Users,
   AlertCircle,
+  CheckCircle,
+  XCircle,
 } from "lucide-react";
 
 const Register = () => {
@@ -26,68 +30,54 @@ const Register = () => {
   const navigate = useNavigate();
 
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+    setFormData({ ...formData, [e.target.name]: e.target.value });
     setError("");
   };
+
+  const passwordStrength = () => {
+    const pw = formData.password;
+    if (!pw) return { label: "", pct: 0, color: "" };
+    let score = 0;
+    if (pw.length >= 6) score++;
+    if (pw.length >= 10) score++;
+    if (/[A-Z]/.test(pw)) score++;
+    if (/[0-9]/.test(pw)) score++;
+    if (/[^A-Za-z0-9]/.test(pw)) score++;
+
+    if (score <= 1) return { label: "Weak", pct: 20, color: "bg-danger-400" };
+    if (score <= 2) return { label: "Fair", pct: 40, color: "bg-neon-orange" };
+    if (score <= 3) return { label: "Good", pct: 60, color: "bg-yellow-400" };
+    if (score <= 4) return { label: "Strong", pct: 80, color: "bg-neon-green" };
+    return { label: "Very Strong", pct: 100, color: "bg-neon-green" };
+  };
+
+  const strength = passwordStrength();
+  const passwordsMatch =
+    formData.confirmPassword && formData.password === formData.confirmPassword;
+  const passwordsMismatch =
+    formData.confirmPassword && formData.password !== formData.confirmPassword;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
 
-    // Validation
-    if (!formData.name.trim()) {
-      setError("Please enter your name");
-      return;
-    }
-
-    if (!formData.email.trim()) {
-      setError("Please enter your email");
-      return;
-    }
-
-    if (!formData.password) {
-      setError("Please enter a password");
-      return;
-    }
-
-    if (formData.password !== formData.confirmPassword) {
-      setError("Passwords do not match");
-      return;
-    }
-
-    if (formData.password.length < 6) {
-      setError("Password must be at least 6 characters long");
-      return;
-    }
-
-    if (!formData.age || formData.age < 1 || formData.age > 120) {
-      setError("Please enter a valid age");
-      return;
-    }
-
-    if (!formData.gender) {
-      setError("Please select your gender");
-      return;
-    }
+    if (!formData.name.trim()) { setError("Please enter your name"); return; }
+    if (!formData.email.trim()) { setError("Please enter your email"); return; }
+    if (!formData.password) { setError("Please enter a password"); return; }
+    if (formData.password !== formData.confirmPassword) { setError("Passwords do not match"); return; }
+    if (formData.password.length < 6) { setError("Password must be at least 6 characters long"); return; }
+    if (!formData.age || formData.age < 1 || formData.age > 120) { setError("Please enter a valid age"); return; }
+    if (!formData.gender) { setError("Please select your gender"); return; }
 
     setLoading(true);
 
     try {
-      // Remove confirmPassword before sending
       const { confirmPassword, ...registerData } = formData;
-
-      // Convert age to number
       registerData.age = parseInt(registerData.age);
-
-      console.log("Submitting registration data:", registerData);
-
       await register(registerData);
+      toast.success("Account created successfully! 🎉");
       navigate("/dashboard");
     } catch (err) {
-      console.error("Registration error:", err);
       setError(
         err.response?.data?.message ||
           err.message ||
@@ -98,88 +88,127 @@ const Register = () => {
     }
   };
 
+  const completedSteps = [
+    formData.name && formData.email,
+    formData.age && formData.gender,
+    formData.password && formData.confirmPassword && formData.password === formData.confirmPassword,
+  ].filter(Boolean).length;
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary-50 to-secondary-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full">
-        <div className="bg-white rounded-2xl shadow-xl p-8">
-          <div className="text-center mb-8">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-primary-100 rounded-full mb-4">
-              <UserPlus className="w-8 h-8 text-primary-600" />
-            </div>
-            <h2 className="text-3xl font-bold text-gray-900">Create Account</h2>
-            <p className="mt-2 text-gray-600">Join HealthAI today</p>
+    <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 relative">
+      {/* Ambient glows */}
+      <div className="absolute top-1/4 right-1/4 w-80 h-80 bg-accent/8 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute bottom-1/4 left-1/4 w-80 h-80 bg-neon-purple/5 rounded-full blur-3xl pointer-events-none" />
+
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, ease: "easeOut" }}
+        className="max-w-md w-full relative z-10"
+      >
+        <div className="glass-card p-8 sm:p-10">
+          {/* Header */}
+          <div className="text-center mb-6">
+            <motion.div
+              className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-accent to-neon-cyan mb-5 shadow-lg shadow-accent/30"
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ type: "spring", stiffness: 300, delay: 0.2 }}
+            >
+              <UserPlus className="w-7 h-7 text-white" />
+            </motion.div>
+            <h2 className="text-2xl sm:text-3xl font-bold text-white">
+              Create Account
+            </h2>
+            <p className="mt-2 text-slate-400 text-sm">
+              Join HealthMateAI today
+            </p>
           </div>
 
+          {/* Step Progress */}
+          <div className="flex items-center justify-center gap-2 mb-6">
+            {[0, 1, 2].map((i) => (
+              <div
+                key={i}
+                className={`h-1.5 flex-1 rounded-full transition-all duration-500 ${
+                  i < completedSteps
+                    ? "bg-gradient-to-r from-accent to-neon-cyan"
+                    : "bg-white/[0.08]"
+                }`}
+              />
+            ))}
+          </div>
+
+          {/* Error */}
           {error && (
-            <div className="mb-6 p-4 bg-danger-50 border border-danger-200 rounded-lg flex items-start space-x-3">
-              <AlertCircle className="w-5 h-5 text-danger-500 flex-shrink-0 mt-0.5" />
-              <p className="text-sm text-danger-700">{error}</p>
-            </div>
+            <motion.div
+              initial={{ opacity: 0, y: -10, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              className="mb-5 p-4 bg-danger/10 border border-danger/20 rounded-xl flex items-start space-x-3"
+            >
+              <AlertCircle className="w-5 h-5 text-danger-400 flex-shrink-0 mt-0.5" />
+              <p className="text-sm text-danger-300">{error}</p>
+            </motion.div>
           )}
 
+          {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-4">
+            {/* Name */}
             <div>
-              <label
-                htmlFor="name"
-                className="block text-sm font-medium text-gray-700 mb-2"
-              >
+              <label htmlFor="register-name" className="block text-sm font-medium text-slate-300 mb-2">
                 Full Name *
               </label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <User className="h-5 w-5 text-gray-400" />
+                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                  <User className="h-4 w-4 text-slate-500" />
                 </div>
                 <input
-                  id="name"
+                  id="register-name"
                   name="name"
                   type="text"
                   required
                   value={formData.name}
                   onChange={handleChange}
-                  className="input-field pl-10"
+                  className="input-field pl-11"
                   placeholder="John Doe"
                 />
               </div>
             </div>
 
+            {/* Email */}
             <div>
-              <label
-                htmlFor="email"
-                className="block text-sm font-medium text-gray-700 mb-2"
-              >
+              <label htmlFor="register-email" className="block text-sm font-medium text-slate-300 mb-2">
                 Email Address *
               </label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Mail className="h-5 w-5 text-gray-400" />
+                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                  <Mail className="h-4 w-4 text-slate-500" />
                 </div>
                 <input
-                  id="email"
+                  id="register-email"
                   name="email"
                   type="email"
                   required
                   value={formData.email}
                   onChange={handleChange}
-                  className="input-field pl-10"
+                  className="input-field pl-11"
                   placeholder="you@example.com"
                 />
               </div>
             </div>
 
+            {/* Age & Gender */}
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label
-                  htmlFor="age"
-                  className="block text-sm font-medium text-gray-700 mb-2"
-                >
+                <label htmlFor="register-age" className="block text-sm font-medium text-slate-300 mb-2">
                   Age *
                 </label>
                 <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <Calendar className="h-5 w-5 text-gray-400" />
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <Calendar className="h-4 w-4 text-slate-500" />
                   </div>
                   <input
-                    id="age"
+                    id="register-age"
                     name="age"
                     type="number"
                     required
@@ -187,99 +216,136 @@ const Register = () => {
                     max="120"
                     value={formData.age}
                     onChange={handleChange}
-                    className="input-field pl-10"
+                    className="input-field pl-11"
                     placeholder="25"
                   />
                 </div>
               </div>
-
               <div>
-                <label
-                  htmlFor="gender"
-                  className="block text-sm font-medium text-gray-700 mb-2"
-                >
+                <label htmlFor="register-gender" className="block text-sm font-medium text-slate-300 mb-2">
                   Gender *
                 </label>
                 <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <Users className="h-5 w-5 text-gray-400" />
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <Users className="h-4 w-4 text-slate-500" />
                   </div>
                   <select
-                    id="gender"
+                    id="register-gender"
                     name="gender"
                     required
                     value={formData.gender}
                     onChange={handleChange}
-                    className="input-field pl-10 appearance-none"
+                    className="input-field pl-11 appearance-none cursor-pointer"
+                    style={{
+                      colorScheme: "dark",
+                    }}
                   >
-                    <option value="">Select</option>
-                    <option value="male">Male</option>
-                    <option value="female">Female</option>
-                    <option value="other">Other</option>
+                    <option value="" className="bg-surface-50 text-slate-400">Select Gender</option>
+                    <option value="male" className="bg-surface-50 text-white">Male</option>
+                    <option value="female" className="bg-surface-50 text-white">Female</option>
+                    <option value="other" className="bg-surface-50 text-white">Other</option>
                   </select>
+                  {/* Custom dropdown arrow */}
+                  <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                    <svg className="h-4 w-4 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </div>
                 </div>
               </div>
             </div>
 
+            {/* Password */}
             <div>
-              <label
-                htmlFor="password"
-                className="block text-sm font-medium text-gray-700 mb-2"
-              >
+              <label htmlFor="register-password" className="block text-sm font-medium text-slate-300 mb-2">
                 Password *
               </label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Lock className="h-5 w-5 text-gray-400" />
+                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                  <Lock className="h-4 w-4 text-slate-500" />
                 </div>
                 <input
-                  id="password"
+                  id="register-password"
                   name="password"
                   type="password"
                   required
                   minLength="6"
                   value={formData.password}
                   onChange={handleChange}
-                  className="input-field pl-10"
+                  className="input-field pl-11"
                   placeholder="••••••••"
                 />
               </div>
-              <p className="text-xs text-gray-500 mt-1">Minimum 6 characters</p>
+              {/* Password Strength Bar */}
+              {formData.password && (
+                <div className="mt-2">
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-xs text-slate-500">Password Strength</span>
+                    <span className="text-xs text-slate-400 font-medium">{strength.label}</span>
+                  </div>
+                  <div className="h-1.5 bg-white/[0.06] rounded-full overflow-hidden">
+                    <motion.div
+                      className={`h-full rounded-full ${strength.color}`}
+                      initial={{ width: 0 }}
+                      animate={{ width: `${strength.pct}%` }}
+                      transition={{ duration: 0.3 }}
+                    />
+                  </div>
+                </div>
+              )}
             </div>
 
+            {/* Confirm Password */}
             <div>
-              <label
-                htmlFor="confirmPassword"
-                className="block text-sm font-medium text-gray-700 mb-2"
-              >
+              <label htmlFor="register-confirmPassword" className="block text-sm font-medium text-slate-300 mb-2">
                 Confirm Password *
               </label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Lock className="h-5 w-5 text-gray-400" />
+                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                  <Lock className="h-4 w-4 text-slate-500" />
                 </div>
                 <input
-                  id="confirmPassword"
+                  id="register-confirmPassword"
                   name="confirmPassword"
                   type="password"
                   required
                   minLength="6"
                   value={formData.confirmPassword}
                   onChange={handleChange}
-                  className="input-field pl-10"
+                  className={`input-field pl-11 pr-11 ${
+                    passwordsMatch
+                      ? "border-neon-green/50 focus:ring-neon-green/30"
+                      : passwordsMismatch
+                      ? "border-danger/50 focus:ring-danger/30"
+                      : ""
+                  }`}
                   placeholder="••••••••"
                 />
+                {formData.confirmPassword && (
+                  <div className="absolute inset-y-0 right-0 pr-4 flex items-center">
+                    {passwordsMatch ? (
+                      <CheckCircle className="h-4 w-4 text-neon-green" />
+                    ) : (
+                      <XCircle className="h-4 w-4 text-danger-400" />
+                    )}
+                  </div>
+                )}
               </div>
             </div>
 
-            <button
+            <motion.button
               type="submit"
               disabled={loading}
-              className="w-full btn-primary flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full btn-primary flex items-center justify-center space-x-2 py-3.5 disabled:opacity-50 disabled:cursor-not-allowed mt-2"
+              whileTap={{ scale: 0.98 }}
             >
               {loading ? (
                 <>
-                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                  <motion.div
+                    className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full"
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 0.8, repeat: Infinity, ease: "linear" }}
+                  />
                   <span>Creating account...</span>
                 </>
               ) : (
@@ -288,22 +354,22 @@ const Register = () => {
                   <span>Create Account</span>
                 </>
               )}
-            </button>
+            </motion.button>
           </form>
 
           <div className="mt-6 text-center">
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-slate-500">
               Already have an account?{" "}
               <Link
                 to="/login"
-                className="font-medium text-primary-600 hover:text-primary-500"
+                className="font-medium text-accent-300 hover:text-accent-200 transition-colors"
               >
                 Sign in
               </Link>
             </p>
           </div>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 };
