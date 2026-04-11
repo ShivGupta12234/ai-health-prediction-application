@@ -1,7 +1,17 @@
-# 🏥 AI-Powered Health Prediction Application
+# 🏥 AI-Powered Disease Recognition, Early-Diagnosis, And Risk-Stratification System
 
 An Intelligent full-stack healthcare application that leverages AI and machine learning to predict diseases, assess mortality risks, and provide personalized health recommendations.
 Check it out: https://healthmateai-app.vercel.app/
+This project is developed as part of an academic curriculum final year major project at Pranveer Singh Institute Of Technology (PSIT), Knapur
+
+## 👥Made by:
+
+**Team ID**: 26_CS_DS_4B_5
+
+- **Shiv Prakash Gupta** - 2201640310107 [Team Leader] 
+- **Anushka Tiwari** - 2201641540022
+- **Arpit Gupta** - 2201641540027
+- **Saksham Chaturvedi** - 2101641540073
 
 
 ## 🌟 Features
@@ -13,6 +23,7 @@ Check it out: https://healthmateai-app.vercel.app/
 - **💊 Personalized Recommendations**: Tailored health advice for each prediction
 - **📈 Prediction History**: Track your health journey over time
 - **📱 Responsive Design**: Works seamlessly on desktop and mobile
+
 
 ## 🛠️ Tech Stack
 
@@ -41,6 +52,16 @@ Check it out: https://healthmateai-app.vercel.app/
 - MongoDB (local installation or MongoDB Atlas account)
 - Git
 - npm or yarn
+
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
 
 ## 🚀 Local Installation
 
@@ -183,53 +204,6 @@ ai-health-prediction-application/
    - View statistics
    - Check charts
    - Review prediction history
-
-## 🔒 Security Notes
-
-- Never commit `.env` files to version control
-- Always use strong, unique JWT secrets in production
-- Use environment variables for sensitive data
-- Enable HTTPS in production
-- Implement rate limiting for API endpoints
-- Regularly update dependencies
-
-## 🌐 Deployment
-
-See [DEPLOYMENT.md](DEPLOYMENT.md) for detailed deployment instructions.
-
-### Quick Deployment Links
-
-- **Backend**: Deploy to [Render](https://render.com)
-- **Frontend**: Deploy to [Vercel](https://vercel.com)
-- **Database**: Use [MongoDB Atlas](https://www.mongodb.com/cloud/atlas)
-
-## 👥 Team
-
-**Team ID**: 26_CS_DS_4B_5
-
-- **Shiv Prakash Gupta** (Team Leader) - 2201640310107
-- **Anushka Tiwari** - 2201641540022
-- **Arpit Gupta** - 2201641540027
-- **Saksham Chaturvedi** - 2101641540073
-
-## 📄 License
-
-This project is developed as part of an academic curriculum at Pranveer Singh Institute Of Technology (PSIT), Knapur.
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
-## 🙏 Acknowledgments
-
-- Hugging Face for ML model APIs
-- MongoDB Atlas for database hosting
-- React and Vite communities
-- Tailwind CSS team
 
 ---
 **⭐ If you find this project helpful, please give it a star!**
