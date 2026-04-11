@@ -1,28 +1,28 @@
 const User = require("../models/User");
 const jwt = require("jsonwebtoken");
 
-// Generate JWT
+
 const generateToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
     expiresIn: "30d",
   });
 };
 
-// Register user
+
 exports.register = async (req, res) => {
   try {
     console.log("Registration request body:", req.body); // Debug log
 
     const { name, email, password, age, gender } = req.body;
 
-    // Validate input
+
     if (!name || !email || !password) {
       return res.status(400).json({
         message: "Please provide name, email, and password",
       });
     }
 
-    // Check if user exists
+
     const userExists = await User.findOne({ email });
     if (userExists) {
       return res
@@ -30,7 +30,7 @@ exports.register = async (req, res) => {
         .json({ message: "User already exists with this email" });
     }
 
-    // Create user
+
     const user = await User.create({
       name,
       email,
@@ -59,27 +59,27 @@ exports.register = async (req, res) => {
   }
 };
 
-// Login user
+
 exports.login = async (req, res) => {
   try {
     console.log("Login request body:", req.body); // Debug log
 
     const { email, password } = req.body;
 
-    // Validate input
+
     if (!email || !password) {
       return res.status(400).json({
         message: "Please provide email and password",
       });
     }
 
-    // Check user
+    
     const user = await User.findOne({ email });
     if (!user) {
       return res.status(401).json({ message: "Invalid email or password" });
     }
 
-    // Check password
+
     const isMatch = await user.comparePassword(password);
     if (!isMatch) {
       return res.status(401).json({ message: "Invalid email or password" });
@@ -101,7 +101,7 @@ exports.login = async (req, res) => {
   }
 };
 
-// Get user profile
+
 exports.getProfile = async (req, res) => {
   try {
     const user = await User.findById(req.user._id).select("-password");

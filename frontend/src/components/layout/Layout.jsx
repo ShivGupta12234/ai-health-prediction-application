@@ -12,7 +12,7 @@ const Layout = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <p className="text-sm">© 2025 HealthMateAI. All rights reserved.</p>
           <p className="text-xs text-gray-400 mt-2">
-            Team 26_CS_DS_4B_5 - AI-Powered Disease Prediction System
+            TeamID - 26_CS_DS_4B_05 - AI-Powered Disease Prediction System
           </p>
         </div>
       </footer>

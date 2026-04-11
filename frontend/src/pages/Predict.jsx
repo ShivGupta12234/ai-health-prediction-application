@@ -55,6 +55,32 @@ const Predict = () => {
     "Itchy eyes",
     "Nasal congestion",
     "Sensitivity to light",
+    "Muscle weakness",
+    "Joint pain",
+    "Skin rash",
+    "Itching",
+    "Yellowing of skin",
+    "Night sweats",
+    "Weight loss",
+    "Swollen lymph nodes",
+    "Chills",
+    "High fever",
+    "Back pain",
+    "Neck stiffness",
+    "Anxiety",
+    "Restlessness",
+    "Excessive worry",
+    "Persistent sadness",
+    "Sleep disturbance",
+    "Muscle tension",
+    "Facial pain",
+    "Thick nasal discharge",
+    "Mucus production",
+    "Chest tightness",
+    "Rapid breathing",
+    "Slow healing wounds",
+    "Watery eyes",
+    "Throbbing pain",
   ];
 
   const handleSymptomChange = (index, value) => {
@@ -83,11 +109,20 @@ const Predict = () => {
     setError("");
   };
 
+  const handleQuickSelect = (symptom) => {
+    if (symptoms.includes(symptom)) return;
+    const emptyIndex = symptoms.findIndex((s) => s.trim() === "");
+    if (emptyIndex !== -1) {
+      handleSymptomChange(emptyIndex, symptom);
+    } else {
+      setSymptoms([...symptoms, symptom]);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
 
-    // Filter out empty symptoms
     const filteredSymptoms = symptoms.filter((s) => s.trim() !== "");
 
     if (filteredSymptoms.length === 0) {
@@ -149,7 +184,6 @@ const Predict = () => {
         )}
 
         <form onSubmit={handleSubmit} className="space-y-8">
-          {/* Symptoms Section */}
           <div className="card">
             <h2 className="text-2xl font-semibold text-gray-900 mb-4 flex items-center">
               <Activity className="w-6 h-6 mr-2 text-primary-500" />
@@ -211,27 +245,21 @@ const Predict = () => {
               </button>
             </div>
 
-            {/* Quick Select Symptoms */}
             <div className="mt-6 pt-6 border-t border-gray-200">
               <p className="text-sm font-medium text-gray-700 mb-3">
                 Quick Select Common Symptoms:
               </p>
               <div className="flex flex-wrap gap-2">
-                {commonSymptoms.slice(0, 15).map((symptom, index) => (
+                {commonSymptoms.map((symptom, index) => (
                   <button
                     key={index}
                     type="button"
-                    onClick={() => {
-                      const emptyIndex = symptoms.findIndex(
-                        (s) => s.trim() === ""
-                      );
-                      if (emptyIndex !== -1) {
-                        handleSymptomChange(emptyIndex, symptom);
-                      } else if (!symptoms.includes(symptom)) {
-                        setSymptoms([...symptoms, symptom]);
-                      }
-                    }}
-                    className="px-3 py-1.5 bg-primary-100 text-primary-700 rounded-lg text-sm hover:bg-primary-200 transition-colors font-medium"
+                    onClick={() => handleQuickSelect(symptom)}
+                    className={`px-3 py-1.5 rounded-lg text-sm transition-colors font-medium ${
+                      symptoms.includes(symptom)
+                        ? "bg-primary-600 text-white cursor-default"
+                        : "bg-primary-100 text-primary-700 hover:bg-primary-200"
+                    }`}
                   >
                     {symptom}
                   </button>
@@ -240,7 +268,6 @@ const Predict = () => {
             </div>
           </div>
 
-          {/* Vital Signs Section */}
           <div className="card">
             <h2 className="text-2xl font-semibold text-gray-900 mb-4 flex items-center">
               <Heart className="w-6 h-6 mr-2 text-danger-500" />
@@ -346,7 +373,6 @@ const Predict = () => {
             </div>
           </div>
 
-          {/* Info Box */}
           <div className="bg-primary-50 border-l-4 border-primary-500 p-4 rounded-lg">
             <div className="flex">
               <div className="flex-shrink-0">
@@ -363,7 +389,6 @@ const Predict = () => {
             </div>
           </div>
 
-          {/* Submit Button */}
           <div className="flex justify-center pt-4">
             <button
               type="submit"
