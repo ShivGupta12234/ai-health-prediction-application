@@ -2,7 +2,8 @@
 logs
 *.log
 npm-debug.log*
-
+archive/
+start-dev.bat
 node_modules
 dist
 dist-ssr
