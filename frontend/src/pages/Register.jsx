@@ -76,10 +76,10 @@ const Register = () => {
     setLoading(true);
 
     try {
-      // Remove confirmPassword before sending
+      
       const { confirmPassword, ...registerData } = formData;
 
-      // Convert age to number
+
       registerData.age = parseInt(registerData.age);
 
       console.log("Submitting registration data:", registerData);

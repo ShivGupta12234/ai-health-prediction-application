@@ -98,7 +98,7 @@ const Dashboard = () => {
   return (
     <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
-        {/* Header */}
+
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
             Welcome back, {user?.name}!
@@ -114,7 +114,7 @@ const Dashboard = () => {
           </div>
         )}
 
-        {/* Quick Stats */}
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <div className="card bg-gradient-to-br from-primary-500 to-primary-600 text-white">
             <div className="flex items-center justify-between">
@@ -168,9 +168,9 @@ const Dashboard = () => {
           </div>
         </div>
 
-        {/* Charts and Recent Predictions */}
+
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
-          {/* Risk Distribution Chart */}
+
           {riskChartData.length > 0 && (
             <div className="lg:col-span-1">
               <div className="card">
@@ -216,7 +216,7 @@ const Dashboard = () => {
             </div>
           )}
 
-          {/* Bar Chart - Risk Levels */}
+
           {riskChartData.length > 0 && (
             <div className="lg:col-span-2">
               <div className="card">
@@ -247,7 +247,7 @@ const Dashboard = () => {
           )}
         </div>
 
-        {/* Recent Predictions */}
+
         <div className="card">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-xl font-semibold text-gray-900 flex items-center">
@@ -365,7 +365,7 @@ const Dashboard = () => {
           )}
         </div>
 
-        {/* Health Insights */}
+
         {stats &&
           stats.commonSymptoms &&
           Object.keys(stats.commonSymptoms).length > 0 && (
@@ -390,7 +390,7 @@ const Dashboard = () => {
             </div>
           )}
 
-        {/* Recent Conditions */}
+
         {stats &&
           stats.recentConditions &&
           stats.recentConditions.length > 0 && (

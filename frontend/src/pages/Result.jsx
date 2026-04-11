@@ -95,7 +95,7 @@ const Result = () => {
           </Link>
         </div>
 
-        {/* Main Result Card */}
+
         <div className="card mb-6 border-2 border-gray-200">
           <div className="text-center mb-8">
             <div
@@ -123,7 +123,7 @@ const Result = () => {
             </div>
           </div>
 
-          {/* Predicted Disease - Highlighted Section */}
+
           <div className="bg-gradient-to-r from-primary-50 via-primary-100 to-secondary-50 rounded-xl p-8 mb-6 border-2 border-primary-200">
             <div className="flex items-start justify-between flex-wrap gap-4">
               <div className="flex-1">
@@ -162,7 +162,7 @@ const Result = () => {
             </div>
           </div>
 
-          {/* Risk Assessment Message */}
+
           <div
             className={`rounded-lg p-6 mb-6 border-l-4 ${getRiskColor(
               prediction.mortalityRisk?.risk
@@ -188,9 +188,9 @@ const Result = () => {
             </div>
           </div>
 
-          {/* Symptoms and Vital Signs Grid */}
+
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-            {/* Reported Symptoms */}
+
             <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl p-6 border border-gray-200">
               <h3 className="font-semibold text-lg text-gray-900 mb-4 flex items-center">
                 <Activity className="w-5 h-5 mr-2 text-primary-500" />
@@ -215,7 +215,7 @@ const Result = () => {
               </div>
             </div>
 
-            {/* Vital Signs */}
+
             <div className="bg-gradient-to-br from-danger-50 to-orange-50 rounded-xl p-6 border border-danger-200">
               <h3 className="font-semibold text-lg text-gray-900 mb-4 flex items-center">
                 <Heart className="w-5 h-5 mr-2 text-danger-500" />
@@ -290,7 +290,7 @@ const Result = () => {
             </div>
           </div>
 
-          {/* Detailed Risk Assessment */}
+
           {prediction.mortalityRisk && (
             <div
               className={`rounded-xl p-6 border-2 mb-6 ${getRiskColor(
@@ -322,7 +322,7 @@ const Result = () => {
             </div>
           )}
 
-          {/* Recommendations */}
+
           {prediction.recommendations &&
             prediction.recommendations.length > 0 && (
               <div className="bg-gradient-to-br from-primary-50 to-secondary-50 rounded-xl p-6 border border-primary-200">
@@ -351,7 +351,7 @@ const Result = () => {
             )}
         </div>
 
-        {/* Action Buttons */}
+
         <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
           <Link
             to="/predict"
@@ -371,7 +371,7 @@ const Result = () => {
           </Link>
         </div>
 
-        {/* Important Disclaimer */}
+
         <div className="bg-yellow-50 border-l-4 border-yellow-400 p-6 rounded-lg shadow-md">
           <div className="flex">
             <div className="flex-shrink-0">

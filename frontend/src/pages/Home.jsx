@@ -62,7 +62,7 @@ const Home = () => {
 
   return (
     <div className="min-h-screen">
-      {/* Hero Section */}
+      
       <div className="bg-gradient-to-br from-primary-50 via-white to-secondary-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
           <div className="text-center">
@@ -114,7 +114,7 @@ const Home = () => {
             </div>
           </div>
 
-          {/* Stats */}
+
           <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8">
             {stats.map((stat, index) => (
               <div
@@ -134,7 +134,7 @@ const Home = () => {
         </div>
       </div>
 
-      {/* Features Section */}
+
       <div className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
@@ -163,7 +163,7 @@ const Home = () => {
         </div>
       </div>
 
-      {/* Benefits Section */}
+
       <div className="py-20 bg-gradient-to-br from-primary-50 to-secondary-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
@@ -205,7 +205,7 @@ const Home = () => {
         </div>
       </div>
 
-      {/* CTA Section */}
+
       {!user && (
         <div className="py-20 bg-gradient-to-r from-primary-600 to-primary-700">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
@@ -227,7 +227,7 @@ const Home = () => {
         </div>
       )}
 
-      {/* How It Works */}
+
       <div className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">

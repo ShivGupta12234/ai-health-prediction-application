@@ -6,56 +6,80 @@ const {
   generateRecommendations,
 } = require("../utils/aiService");
 
-// Create prediction
+
 exports.createPrediction = async (req, res) => {
   try {
     const { symptoms, vitalSigns } = req.body;
 
-    // Get user age
+    if (!symptoms || !Array.isArray(symptoms) || symptoms.length === 0) {
+      return res.status(400).json({ message: "Please provide at least one symptom" });
+    }
+
+    const filteredSymptoms = symptoms.filter((s) => typeof s === "string" && s.trim() !== "");
+    if (filteredSymptoms.length === 0) {
+      return res.status(400).json({ message: "Please provide at least one valid symptom" });
+    }
+
     const user = await User.findById(req.user._id);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
 
-    // Predict disease with ML enhancement
-    const diseaseResult = await predictDisease(symptoms);
+    const safeVitalSigns = {
+      heartRate: vitalSigns && vitalSigns.heartRate ? Number(vitalSigns.heartRate) : null,
+      bloodPressure: vitalSigns && vitalSigns.bloodPressure ? String(vitalSigns.bloodPressure) : null,
+      temperature: vitalSigns && vitalSigns.temperature ? Number(vitalSigns.temperature) : null,
+      oxygenLevel: vitalSigns && vitalSigns.oxygenLevel ? Number(vitalSigns.oxygenLevel) : null,
+    };
 
-    // Calculate mortality risk
+    const diseaseResult = await predictDisease(filteredSymptoms);
+
     const mortalityRisk = calculateMortalityRisk(
-      vitalSigns,
+      safeVitalSigns,
       diseaseResult,
       user.age || 30
     );
 
-    // Generate recommendations
-    const recommendations = generateRecommendations(
+    const recommendations = await generateRecommendations(
       diseaseResult.disease,
       mortalityRisk.risk,
-      vitalSigns
+      safeVitalSigns
     );
 
-    // Save prediction
-    const prediction = await Prediction.create({
-      userId: req.user._id,
-      symptoms,
-      vitalSigns,
-      predictedDisease: diseaseResult.disease,
-      confidence: diseaseResult.confidence,
-      mortalityRisk,
-      recommendations,
-    });
+    if (!Array.isArray(recommendations) || recommendations.length === 0) {
+      return res.status(500).json({ message: "Failed to generate recommendations" });
+    }
 
-    // Add ML enhancement info
+    const predictionData = {
+      userId: req.user._id,
+      symptoms: filteredSymptoms,
+      vitalSigns: safeVitalSigns,
+      predictedDisease: diseaseResult.disease || "General Illness",
+      confidence: typeof diseaseResult.confidence === "number" ? diseaseResult.confidence : 40,
+      mortalityRisk: {
+        risk: mortalityRisk.risk || "Medium",
+        probability: mortalityRisk.probability || 50,
+      },
+      recommendations,
+    };
+
+    const prediction = await Prediction.create(predictionData);
+
+
     const response = {
       ...prediction.toObject(),
-      mlEnhanced: diseaseResult.mlEnhanced,
+      mlEnhanced: diseaseResult.mlEnhanced || false,
+      allPredictions: diseaseResult.allPredictions || [],
     };
 
     res.status(201).json(response);
   } catch (error) {
     console.error("Prediction error:", error);
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ message: error.message || "An unexpected error occurred. Please try again." });
   }
 };
 
-// Get user predictions
+
 exports.getUserPredictions = async (req, res) => {
   try {
     const predictions = await Prediction.find({ userId: req.user._id })
@@ -68,7 +92,7 @@ exports.getUserPredictions = async (req, res) => {
   }
 };
 
-// Get prediction by ID
+
 exports.getPredictionById = async (req, res) => {
   try {
     const prediction = await Prediction.findById(req.params.id);
@@ -77,7 +101,6 @@ exports.getPredictionById = async (req, res) => {
       return res.status(404).json({ message: "Prediction not found" });
     }
 
-    // Check if prediction belongs to user
     if (prediction.userId.toString() !== req.user._id.toString()) {
       return res.status(403).json({ message: "Not authorized" });
     }
@@ -88,19 +111,14 @@ exports.getPredictionById = async (req, res) => {
   }
 };
 
-// Get health statistics
+
 exports.getHealthStats = async (req, res) => {
   try {
     const predictions = await Prediction.find({ userId: req.user._id });
 
     const stats = {
       totalPredictions: predictions.length,
-      riskDistribution: {
-        Low: 0,
-        Medium: 0,
-        High: 0,
-        Critical: 0,
-      },
+      riskDistribution: { Low: 0, Medium: 0, High: 0, Critical: 0 },
       commonSymptoms: {},
       recentConditions: [],
       averageConfidence: 0,
@@ -109,36 +127,27 @@ exports.getHealthStats = async (req, res) => {
     let totalConfidence = 0;
 
     predictions.forEach((pred) => {
-      // Risk distribution
+
       if (pred.mortalityRisk && pred.mortalityRisk.risk) {
-        stats.riskDistribution[pred.mortalityRisk.risk]++;
+        stats.riskDistribution[pred.mortalityRisk.risk] =
+          (stats.riskDistribution[pred.mortalityRisk.risk] || 0) + 1;
       }
-
-      // Count symptoms
       pred.symptoms.forEach((symptom) => {
-        stats.commonSymptoms[symptom] =
-          (stats.commonSymptoms[symptom] || 0) + 1;
+        stats.commonSymptoms[symptom] = (stats.commonSymptoms[symptom] || 0) + 1;
       });
-
-      // Accumulate confidence
-      totalConfidence += pred.confidence;
-
-      // Recent conditions
+      totalConfidence += pred.confidence || 0;
       if (stats.recentConditions.length < 5) {
         stats.recentConditions.push({
           disease: pred.predictedDisease,
           date: pred.createdAt,
-          risk: pred.mortalityRisk.risk,
+          risk: pred.mortalityRisk ? pred.mortalityRisk.risk : "Medium",
           confidence: pred.confidence,
         });
       }
     });
 
-    // Calculate average confidence
     if (predictions.length > 0) {
-      stats.averageConfidence = Math.round(
-        totalConfidence / predictions.length
-      );
+      stats.averageConfidence = Math.round(totalConfidence / predictions.length);
     }
 
     res.json(stats);
