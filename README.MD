@@ -2,6 +2,7 @@
 
 An Intelligent full-stack healthcare application that leverages AI and machine learning to predict diseases, assess mortality risks, and provide personalized health recommendations.
 Check it out: https://healthmateai-app.vercel.app/
+
 This project is developed as part of an academic curriculum final year major project at Pranveer Singh Institute Of Technology (PSIT), Knapur
 
 ## 👥Made by:
