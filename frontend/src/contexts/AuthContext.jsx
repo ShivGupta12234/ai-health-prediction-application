@@ -44,6 +44,8 @@ export const AuthProvider = ({ children }) => {
     try {
       console.log("Register attempt:", userData);
       const response = await authAPI.register(userData);
+      console.log("STATUS:", response.status);
+      console.log("DATA:", response.data);
       const { token, ...user } = response.data;
 
       localStorage.setItem("token", token);

@@ -1,27 +1,27 @@
 import axios from "axios";
 
-const API_URL = "https://healthmateai-api.onrender.com/api";
+const API_URL = import.meta.env.VITE_API_URL;
+
+if (!API_URL) {
+  throw new Error("VITE_API_URL is not defined");
+}
 
 const api = axios.create({
   baseURL: API_URL,
   headers: {
     "Content-Type": "application/json",
   },
+  timeout: 30000,
 });
 
-
-api.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem("token");
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
   }
-);
+  return config;
+});
+
 
 
 api.interceptors.response.use(
@@ -38,8 +38,8 @@ api.interceptors.response.use(
 
 
 export const authAPI = {
-  register: (userData) => api.post("/auth/register", userData),
-  login: (credentials) => api.post("/auth/login", credentials),
+  register: (data) => api.post("/auth/register", data),
+  login: (data) => api.post("/auth/login", data),
   getProfile: () => api.get("/auth/profile"),
 };
 
