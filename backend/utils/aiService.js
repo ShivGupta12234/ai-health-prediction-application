@@ -255,7 +255,8 @@ const calculateMortalityRisk = (vitalSigns, predictedDisease, age) => {
     }
 
     const severityMap = { Critical: 35, High: 25, Medium: 15, Low: 5 };
-    const diseaseSeverity = predictedDisease && predictedDisease.severity ? predictedDisease.severity : "Medium";
+    const diseaseSeverity = predictedDisease && predictedDisease.severity
+      ? predictedDisease.severity : "Medium";
     riskScore += severityMap[diseaseSeverity] || 15;
 
     let risk, probability;

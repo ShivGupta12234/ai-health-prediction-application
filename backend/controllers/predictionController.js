@@ -15,7 +15,10 @@ exports.createPrediction = async (req, res) => {
       return res.status(400).json({ message: "Please provide at least one symptom" });
     }
 
-    const filteredSymptoms = symptoms.filter((s) => typeof s === "string" && s.trim() !== "");
+    const filteredSymptoms = symptoms.filter(
+      (s) => typeof s === "string" && s.trim() !== ""
+    );
+
     if (filteredSymptoms.length === 0) {
       return res.status(400).json({ message: "Please provide at least one valid symptom" });
     }
@@ -26,10 +29,10 @@ exports.createPrediction = async (req, res) => {
     }
 
     const safeVitalSigns = {
-      heartRate: vitalSigns && vitalSigns.heartRate ? Number(vitalSigns.heartRate) : null,
+      heartRate:     vitalSigns && vitalSigns.heartRate     ? Number(vitalSigns.heartRate)     : null,
       bloodPressure: vitalSigns && vitalSigns.bloodPressure ? String(vitalSigns.bloodPressure) : null,
-      temperature: vitalSigns && vitalSigns.temperature ? Number(vitalSigns.temperature) : null,
-      oxygenLevel: vitalSigns && vitalSigns.oxygenLevel ? Number(vitalSigns.oxygenLevel) : null,
+      temperature:   vitalSigns && vitalSigns.temperature   ? Number(vitalSigns.temperature)   : null,
+      oxygenLevel:   vitalSigns && vitalSigns.oxygenLevel   ? Number(vitalSigns.oxygenLevel)   : null,
     };
 
     const diseaseResult = await predictDisease(filteredSymptoms);
@@ -51,13 +54,13 @@ exports.createPrediction = async (req, res) => {
     }
 
     const predictionData = {
-      userId: req.user._id,
-      symptoms: filteredSymptoms,
-      vitalSigns: safeVitalSigns,
+      userId:          req.user._id,
+      symptoms:        filteredSymptoms,
+      vitalSigns:      safeVitalSigns,
       predictedDisease: diseaseResult.disease || "General Illness",
-      confidence: typeof diseaseResult.confidence === "number" ? diseaseResult.confidence : 40,
+      confidence:      typeof diseaseResult.confidence === "number" ? diseaseResult.confidence : 40,
       mortalityRisk: {
-        risk: mortalityRisk.risk || "Medium",
+        risk:        mortalityRisk.risk        || "Medium",
         probability: mortalityRisk.probability || 50,
       },
       recommendations,
@@ -68,14 +71,16 @@ exports.createPrediction = async (req, res) => {
 
     const response = {
       ...prediction.toObject(),
-      mlEnhanced: diseaseResult.mlEnhanced || false,
+      mlEnhanced:    diseaseResult.mlEnhanced    || false,
       allPredictions: diseaseResult.allPredictions || [],
     };
 
     res.status(201).json(response);
   } catch (error) {
     console.error("Prediction error:", error);
-    res.status(500).json({ message: error.message || "An unexpected error occurred. Please try again." });
+    res.status(500).json({
+      message: error.message || "An unexpected error occurred. Please try again.",
+    });
   }
 };
 
@@ -119,7 +124,7 @@ exports.getHealthStats = async (req, res) => {
     const stats = {
       totalPredictions: predictions.length,
       riskDistribution: { Low: 0, Medium: 0, High: 0, Critical: 0 },
-      commonSymptoms: {},
+      commonSymptoms:   {},
       recentConditions: [],
       averageConfidence: 0,
     };
@@ -132,15 +137,18 @@ exports.getHealthStats = async (req, res) => {
         stats.riskDistribution[pred.mortalityRisk.risk] =
           (stats.riskDistribution[pred.mortalityRisk.risk] || 0) + 1;
       }
+
       pred.symptoms.forEach((symptom) => {
         stats.commonSymptoms[symptom] = (stats.commonSymptoms[symptom] || 0) + 1;
       });
+
       totalConfidence += pred.confidence || 0;
+
       if (stats.recentConditions.length < 5) {
         stats.recentConditions.push({
-          disease: pred.predictedDisease,
-          date: pred.createdAt,
-          risk: pred.mortalityRisk ? pred.mortalityRisk.risk : "Medium",
+          disease:    pred.predictedDisease,
+          date:       pred.createdAt,
+          risk:       pred.mortalityRisk ? pred.mortalityRisk.risk : "Medium",
           confidence: pred.confidence,
         });
       }
