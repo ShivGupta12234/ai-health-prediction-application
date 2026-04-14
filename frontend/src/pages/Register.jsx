@@ -99,7 +99,7 @@ const Register = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary-50 to-secondary-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-gray-100 via-blue-50 to-blue-100 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full">
         <div className="bg-white rounded-2xl shadow-xl p-8">
           <div className="text-center mb-8">
@@ -275,7 +275,7 @@ const Register = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full btn-primary flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full btn-primary flex bg-gradient-to-r from-blue-500 via-blue-700 to-blue-500 hover:scale-105 active:scale-10 disabled:opacity-70 hover:shadow-md items-center justify-center space-x-2 disabled:cursor-not-allowed"
             >
               {loading ? (
                 <>
@@ -296,7 +296,7 @@ const Register = () => {
               Already have an account?{" "}
               <Link
                 to="/login"
-                className="font-medium text-primary-600 hover:text-primary-500"
+                className="font-medium text-primary-700 hover:text-primary-500"
               >
                 Sign in
               </Link>

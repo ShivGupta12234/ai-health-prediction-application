@@ -39,7 +39,7 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary-50 to-secondary-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-gray-100 via-blue-50 to-blue-100 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full">
         <div className="bg-white rounded-2xl shadow-xl p-8">
           <div className="text-center mb-8">
@@ -109,7 +109,7 @@ const Login = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full btn-primary flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full btn-primary bg-gradient-to-r from-blue-500 via-blue-600 to-blue-500 hover:scale-105 active:scale-10 disabled:opacity-70 hover:shadow-md flex items-center justify-center space-x-2 disabled:cursor-not-allowed"
             >
               {loading ? (
                 <>

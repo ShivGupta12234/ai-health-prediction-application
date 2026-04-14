@@ -162,16 +162,16 @@ const Predict = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary-50 via-white to-secondary-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-br from-gray-100 via-blue-50 to-blue-100 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto">
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-16 h-16 bg-primary-100 rounded-full mb-4">
             <Stethoscope className="w-8 h-8 text-primary-600" />
           </div>
-          <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-2">
+          <h1 className="text-3xl sm:text-4xl font-bold text-black mb-2">
             Health Assessment
           </h1>
-          <p className="text-gray-600">
+          <p className="text-gray-800">
             Enter your symptoms and vital signs for AI-powered health analysis
           </p>
         </div>
@@ -393,7 +393,7 @@ const Predict = () => {
             <button
               type="submit"
               disabled={loading}
-              className="btn-primary px-10 py-4 text-lg flex items-center space-x-3 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl transition-all"
+              className="btn-primary bg-gradient-to-r from-blue-500 via-primary-700 to-blue-500 px-10 py-4 text-lg flex items-center space-x-3 hover:scale-105 active:scale-95 disabled:opacity-70  disabled:cursor-not-allowed shadow-lg hover:shadow-xl transition-all"
             >
               {loading ? (
                 <>

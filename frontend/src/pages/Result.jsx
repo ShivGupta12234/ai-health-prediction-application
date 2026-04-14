@@ -105,19 +105,19 @@ const Result = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary-50 via-white to-secondary-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-r from-gray-100 via-blue-50 to-blue-100 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-5xl mx-auto">
         <div className="mb-6">
           <Link
             to="/dashboard"
-            className="inline-flex items-center text-primary-600 hover:text-primary-800 font-medium transition-colors"
+            className="inline-flex btn-primary bg-gradient-to-r from-blue-500 via-primary-700 to-blue-500 px-8 py-3 text-center shadow-lg hover:shadow-xl  hover:bg-blue-50 hover:scale-105 active:scale-95 disabled:opacity-70 items-center justify-center"
           >
             <ArrowLeft className="w-4 h-4 mr-2 transition-colors" />
             Back to Dashboard
           </Link>
         </div>
 
-        <div className="card mb-6 border-2 border-gray-200">
+        <div className="card bg-gradient-to-r from-gray-50 via-blue-50 to-gray-50 mb-6 border-2 border-gray-200">
           
           <div className="text-center mb-8">
             <div
@@ -146,7 +146,7 @@ const Result = () => {
           </div>
 
           
-          <div className="bg-gradient-to-r from-primary-500 via-primary-600 to-blue-400 rounded-xl p-8 mb-6 border-2 border-primary-200">
+          <div className="bg-gradient-to-r  from-blue-500 via-primary-600 to-blue-500 rounded-xl p-8 mb-6 border-2 border-primary-200">
             <div className="flex items-start justify-between flex-wrap gap-4">
               <div className="flex-1">
                 <div className="flex items-center space-x-2 mb-2">
@@ -308,7 +308,7 @@ const Result = () => {
                   )}
                 </div>
               ) : (
-                <p className="text-gray-500 text-sm">No vital signs recorded</p>
+                <p className="text-white text-sm">No vital signs recorded</p>
               )}
             </div>
           </div>
@@ -431,27 +431,34 @@ const Result = () => {
 
         
         <div className="flex flex-col  sm:flex-row gap-4 justify-center mb-8">
-          <Link
+          <button className="max-w-full flex items-center justify-center space-x-2">
+            <Link
             to="/predict"
-            className="btn-primary bg-gradient-to-r from-blue-500 via-primary-700 to-blue-500 px-8 py-3 text-center shadow-lg hover:shadow-xl transition-all"
+            className="btn-primary bg-gradient-to-r from-blue-500 via-primary-700 to-blue-500 px-8 py-3 text-center shadow-lg hover:shadow-xl  hover:bg-blue-50 hover:scale-105 active:scale-95 disabled:opacity-70 flex items-center justify-center"
           >
             <div className="flex items-center justify-center space-x-2">
               <Activity className="w-5 h-5" />
               <span>New Health Assessment</span>
             </div>
           </Link>
+          </button>
 
-          <Link
+          <button className="max-w-full flex items-center justify-center space-x-2">
+             <Link
             to="/dashboard"
-            className="bg-white text-primary-600 px-8 py-3 rounded-lg font-medium hover:bg-gray-50 transition-all border-2 border-primary-500 text-center flex items-center justify-center shadow-lg hover:shadow-xl hover:text-white hover:bg-gradient-to-r from-blue-500 via-primary-700 to-blue-600 "
+            className="bg-white text-primary-600 px-8 py-3 rounded-lg font-medium border-2 border-primary-500 text-center flex items-center justify-center shadow-lg hover:bg-gradient-to-r hover:text-white hover:from-blue-500 hover:via-primary-700 hover:to-blue-500 hover:border-none hover:scale-105 active:scale-95 disabled:opacity-70 "
           >
             <Home className="w-5 h-5 mr-2" />
-            Go to Dashboard
+            <div className="flex items-center justify-center space-x-2">Go to Dashboard</div>
+            
           </Link>
+          </button>
+
+         
         </div>
 
         
-        <div className="bg-yellow-50 border-l-4 border-yellow-400 p-6 rounded-lg shadow-md">
+        <div className="bg-yellow-50 border-l-4 border-yellow-400 p-10 rounded-lg shadow-md">
           <div className="flex">
             <div className="flex-shrink-0">
               <AlertTriangle className="h-6 w-6 text-yellow-400" />

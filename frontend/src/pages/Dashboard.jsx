@@ -121,7 +121,7 @@ const Dashboard = () => {
   : [];
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-r from-gray-100 via-blue-50 to-blue-100 py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
 
         <div className="mb-8">
@@ -141,7 +141,7 @@ const Dashboard = () => {
 
        
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <div className="card bg-gradient-to-br from-blue-500 via-primary-600 to-blue-500 text-white">
+          <div className="card bg-gradient-to-br from-blue-400 via-primary-600 to-blue-400 text-white hover:scale-105 active:scale-10 disabled:opacity-70 hover:shadow-md transition-all duration-300">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-primary-100 text-sm mb-1">Total Predictions</p>
@@ -151,7 +151,7 @@ const Dashboard = () => {
             </div>
           </div>
 
-          <div className="card bg-gradient-to-br from-secondary-500 via-secondary-600 to-secondary-500 text-white">
+          <div className="card bg-gradient-to-br from-secondary-400 via-secondary-600 to-secondary-400 text-white hover:scale-105 active:scale-10 disabled:opacity-70 hover:shadow-md transition-all duration-300">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-secondary-100 text-sm mb-1">Low Risk</p>
@@ -161,7 +161,7 @@ const Dashboard = () => {
             </div>
           </div>
 
-          <div className="card bg-gradient-to-br from-orange-500 via-orange-600 to-orange-500 text-white">
+          <div className="card bg-gradient-to-br from-orange-400 via-red-600 to-orange-400 text-white hover:scale-105 active:scale-10 disabled:opacity-70 hover:shadow-md transition-all duration-300">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-orange-100 text-sm mb-1">High Risk</p>
@@ -174,7 +174,7 @@ const Dashboard = () => {
             </div>
           </div>
 
-          <div className="card bg-gradient-to-br from-purple-500 via-purple-600 to-purple-500 text-white">
+          <div className="card bg-gradient-to-br from-purple-400 via-purple-600 to-purple-400 text-white hover:scale-105 active:scale-10 disabled:opacity-70 hover:shadow-md transition-all duration-300">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-purple-100 text-sm mb-1">Profile</p>
@@ -192,13 +192,13 @@ const Dashboard = () => {
 
           {riskChartData.length > 0 && (
             <div className="lg:col-span-1">
-              <div className="card">
+              <div className="card bg-gradient-to-r from-gray-50 via-blue-50 to-white">
                 <h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center">
                   <Heart className="w-5 h-5 mr-2 text-danger-500" />
                   Risk Distribution
                 </h2>
                 <ResponsiveContainer width="100%" height={280}>
-                  <PieChart>
+                  <PieChart >
                     <Pie
                       data={riskChartData}
                       cx="50%"
@@ -238,12 +238,12 @@ const Dashboard = () => {
 
           {riskChartData.length > 0 && (
             <div className="lg:col-span-2">
-              <div className="card">
+              <div className="card bg-gradient-to-r from-gray-50 via-blue-50 to-white">
                 <h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center">
                   <BarChart3 className="w-5 h-5 mr-2 text-primary-500" />
                   Risk Overview
                 </h2>
-                <ResponsiveContainer width="100%" height={280}>
+                <ResponsiveContainer className={"hover:scale-105 active:scale-95 disabled:opacity-70"} width="100%" height={280}>
                   <BarChart data={riskChartData}>
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="name" />
@@ -263,13 +263,13 @@ const Dashboard = () => {
         </div>
 
         
-        <div className="card">
+        <div className="card bg-gradient-to-r from-gray-50 via-blue-50 to-white">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-xl font-semibold text-gray-900 flex items-center">
               <Activity className="w-5 h-5 mr-2 text-primary-500" />
               Recent Health Assessments
             </h2>
-            <Link to="/predict" className="btn-primary flex items-center space-x-2">
+            <Link to="/predict" className="btn-primary bg-gradient-to-r from-blue-600 via-primary-700 to-blue-600 hover:scale-105 active:scale-95 disabled:opacity-70 flex items-center space-x-2 transition-all duration-300">
               <Plus className="w-4 h-4" />
               <span>New Prediction</span>
             </Link>
@@ -284,7 +284,7 @@ const Dashboard = () => {
               <p className="text-gray-600 mb-6">
                 Start your health journey by creating your first prediction
               </p>
-              <Link to="/predict" className="btn-primary inline-flex items-center space-x-2">
+              <Link to="/predict" className="btn-primary bg-gradient-to-r from-blue-600 via-primary-700 to-blue-600 hover:scale-105 active:scale-95 disabled:opacity-70 transition-all duration-300 inline-flex items-center space-x-2">
                 <Plus className="w-4 h-4" />
                 <span>Create First Prediction</span>
               </Link>
@@ -296,7 +296,7 @@ const Dashboard = () => {
                   <Link
                     to="/result"
                     state={{ prediction }}
-                    className="block p-5 bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg hover:from-gray-100 hover:to-gray-200 transition-all duration-200 border border-gray-200 pr-16"
+                    className="block p-5 bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg hover:from-gray-100 hover:to-gray-200 transition-all duration-300 border border-gray-200 pr-16 hover:scale-105 active:scale-95 disabled:opacity-70"
                   >
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
@@ -398,7 +398,7 @@ const Dashboard = () => {
 
         
         {stats?.commonSymptoms && Object.keys(stats.commonSymptoms || {}).length > 0 && (
-          <div className="card mt-8">
+          <div className="card bg-gradient-to-r from-gray-50 via-blue-50 to-white mt-8">
             <h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center">
               <Activity className="w-5 h-5 mr-2 text-secondary-500" />
               Most Common Symptoms
@@ -410,7 +410,7 @@ const Dashboard = () => {
                 .map(([symptom, count]) => (
                   <div
                     key={symptom}
-                    className="px-4 py-2 bg-secondary-50 text-secondary-700 rounded-full text-sm font-medium border border-secondary-200"
+                    className="px-4 py-2 bg-blue-50 text-blue-700 rounded-full text-sm font-medium border border-blue-200 hover:bg-blue-100 cursor-pointer hover:scale-105 active:scale-95 disabled:opacity-70 transition-all duration-300"
                   >
                     {symptom} ({count})
                   </div>
@@ -421,7 +421,7 @@ const Dashboard = () => {
 
 
         {stats?.recentConditions && stats.recentConditions?.length > 0 && (
-          <div className="card mt-8">
+          <div className="card bg-gradient-to-r from-gray-50 via-blue-50 to-white mt-8 cursor-pointer">
             <h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center">
               <Heart className="w-5 h-5 mr-2 text-danger-500" />
               Recent Conditions Timeline
@@ -430,7 +430,7 @@ const Dashboard = () => {
               {stats.recentConditions.map((condition, index) => (
                 <div
                   key={index}
-                  className="flex items-center space-x-4 p-3 bg-gray-50 rounded-lg"
+                  className="flex items-center space-x-4 p-3 bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg hover:from-gray-100 hover:to-gray-200 transition-all duration-300 border border-gray-200 pr-16 hover:scale-105 active:scale-10 disabled:opacity-70 mt-10"
                 >
                   <div className="flex-shrink-0 w-2 h-2 bg-primary-500 rounded-full"></div>
                   <div className="flex-1">

@@ -9,6 +9,7 @@ import {
   Zap,
   Users,
   Award,
+  Divide,
 } from "lucide-react";
 import { useAuth } from "../contexts/AuthContext";
 
@@ -63,7 +64,7 @@ const Home = () => {
   return (
     <div className="min-h-screen">
       
-      <div className="bg-gradient-to-br from-primary-50 via-white to-secondary-50">
+      <div className="bg-gradient-to-r from-gray-100 via-blue-50 to-blue-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
           <div className="text-center">
             <div className="inline-flex items-center justify-center p-2 bg-primary-100 rounded-full mb-6 animate-pulse">
@@ -98,14 +99,14 @@ const Home = () => {
                 <>
                   <Link
                     to="/register"
-                    className="inline-flex items-center justify-center bg-primary-500 text-white px-8 py-3 rounded-lg text-lg font-semibold hover:bg-primary-600 transition-colors shadow-lg hover:shadow-xl"
+                    className="inline-flex items-center justify-center bg-gradient-to-r from-blue-500 via-blue-700 to-blue-500 hover:scale-105 active:scale-10 disabled:opacity-70 hover:shadow-md text-white px-8 py-3 rounded-lg text-lg font-semibold hover:bg-primary-600 transition-colors shadow-lg"
                   >
                     Get Started Free
                     <ArrowRight className="ml-2 w-5 h-5" />
                   </Link>
                   <Link
                     to="/login"
-                    className="inline-flex items-center justify-center bg-white text-primary-500 px-8 py-3 rounded-lg text-lg font-semibold hover:bg-gray-50 transition-colors border-2 border-primary-500 shadow-lg hover:shadow-xl"
+                    className="inline-flex items-center justify-center bg-white text-primary-500 px-8 py-3 rounded-lg text-lg font-semibold hover:scale-105 active:scale-10 disabled:opacity-70 hover:shadow-md transition-colors border-2 border-primary-500 shadow-lg"
                   >
                     Login
                   </Link>
@@ -115,7 +116,7 @@ const Home = () => {
           </div>
 
 
-          <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8 ">
             {stats.map((stat, index) => (
               <div
                 key={index}
@@ -133,8 +134,7 @@ const Home = () => {
           </div>
         </div>
       </div>
-
-
+      {/* Features go here */}
       <div className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
@@ -162,52 +162,9 @@ const Home = () => {
           </div>
         </div>
       </div>
-
-
-      <div className="py-20 bg-gradient-to-br from-primary-50 to-secondary-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <div>
-              <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-6">
-                Why Choose HealthAI?
-              </h2>
-              <p className="text-lg text-gray-600 mb-8">
-                Our platform combines cutting-edge AI technology with medical
-                expertise to provide you with accurate health predictions and
-                actionable insights.
-              </p>
-              <div className="space-y-4">
-                {benefits.map((benefit, index) => (
-                  <div
-                    key={index}
-                    className="flex items-start space-x-3 bg-white p-4 rounded-lg shadow-sm"
-                  >
-                    <CheckCircle className="w-6 h-6 text-secondary-500 flex-shrink-0 mt-1" />
-                    <span className="text-gray-700 font-medium">{benefit}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-            <div className="bg-white p-8 rounded-2xl shadow-2xl">
-              <div className="aspect-square bg-gradient-to-br from-primary-100 to-secondary-100 rounded-xl flex items-center justify-center">
-                <Activity className="w-32 h-32 text-primary-500 animate-pulse" />
-              </div>
-              <div className="mt-6 text-center">
-                <h3 className="text-xl font-bold text-gray-900 mb-2">
-                  Real-Time Analysis
-                </h3>
-                <p className="text-gray-600">
-                  Get instant health insights powered by AI
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-
+      
       {!user && (
-        <div className="py-20 bg-gradient-to-r from-primary-600 to-primary-700">
+        <div className="py-20 bg-gradient-to-r from-primary-500 via-blue-800 to-primary-500">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <h2 className="text-3xl sm:text-4xl font-bold text-white mb-6">
               Ready to Take Control of Your Health?
@@ -226,9 +183,7 @@ const Home = () => {
           </div>
         </div>
       )}
-
-
-      <div className="py-20 bg-white">
+       <div className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
@@ -267,6 +222,51 @@ const Home = () => {
           </div>
         </div>
       </div>
+
+
+      <div className="py-20 bg-gradient-to-r from-gray-100 via-blue-50 to-blue-100">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div>
+              <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-6">
+                Why Choose HealthMateAI?
+              </h2>
+              <p className="text-lg text-gray-600 mb-8">
+                Our platform combines cutting-edge AI technology with medical
+                expertise to provide you with accurate health predictions and
+                actionable insights.
+              </p>
+              <div className="space-y-4">
+                {benefits.map((benefit, index) => (
+                  <div
+                    key={index}
+                    className="flex items-start space-x-3 bg-white p-4 rounded-lg shadow-sm"
+                  >
+                    <CheckCircle className="w-6 h-6 text-secondary-500 flex-shrink-0 mt-1" />
+                    <span className="text-gray-700 font-medium">{benefit}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="bg-white p-8 rounded-2xl shadow-2xl hover:scale-105 active:scale-10 disabled:opacity-70 transition-all duration-300">
+              <div className="aspect-square bg-gradient-to-br from-primary-100 to-secondary-50 rounded-xl flex items-center justify-center">
+                <Activity className="w-32 h-32 text-primary-500 animate-pulse" />
+              </div>
+              <div className="mt-6 text-center ">
+                <h3 className="text-xl font-bold text-gray-900 mb-2">
+                  Real-Time Analysis
+                </h3>
+                <p className="text-gray-600">
+                  Get instant health insights powered by AI
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      
+      
     </div>
   );
 };
