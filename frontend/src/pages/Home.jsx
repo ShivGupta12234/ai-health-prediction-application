@@ -170,8 +170,7 @@ const Home = () => {
               Ready to Take Control of Your Health?
             </h2>
             <p className="text-xl text-primary-100 mb-8 max-w-2xl mx-auto">
-              Join thousands of users who trust HealthAI for their health
-              monitoring and predictions
+              Join for early disease detection, risk assessment, personalized health insights monitoring and predictions
             </p>
             <Link
               to="/register"
