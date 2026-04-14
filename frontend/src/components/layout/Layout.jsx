@@ -160,13 +160,13 @@ const Layout = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex flex-col sm:flex-col items-center justify-between gap-5">
             <p className="text-sm text-gray-500 flex items-center space-x-1 mt-4">
-              <span><b>Disclaimer: </b>This is an AI-generated prediction for information purposes only{" · "}Consult a qualified healthcare professional for proper diagnosis{" · "}This is just a college level AI-based major project.</span>
+              <span><b>Disclaimer: </b>The AI-generated predictions are just for informational purposes only{" · "}Consult a qualified healthcare professional for proper diagnosis{" · "}In case of any emergency, please consult a healthcare professional immediately.</span>
             </p>
             <p className="text-sm text-gray-500 flex items-center space-x-1">
               <span>© 2026 HEALTHMATEAI. All rights reserved. </span>
               <p className="text-sm text-gray-500 flex items-center">
               Made with  <Heart className="w-3.5 h-3.5 text-danger-500 mx-1 fill-danger-500" />
-              <span>by TeamID{" · "}26_CS_DS_4B_05 as a part of academic curriculum at PSIT, Kanpur.</span>
+              <span>by TeamID{" · "}26_CS_DS_4B_05 as a project which is a part of academic curriculum at PSIT, Kanpur.</span>
             </p>
             </p>
             
