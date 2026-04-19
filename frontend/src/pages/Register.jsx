@@ -1,310 +1,289 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useGoogleLogin } from "@react-oauth/google";
 import { useAuth } from "../contexts/AuthContext";
+import { authAPI } from "../services/api";
 import {
-  UserPlus,
-  Mail,
-  Lock,
-  User,
-  Calendar,
-  Users,
-  AlertCircle,
+  UserPlus, Mail, Lock, User, Calendar, Users,
+  AlertCircle, Eye, EyeOff,
 } from "lucide-react";
+import LoadingOverlay from "../components/common/LoadingOverlay";
+
+
+
+const MIN_LOADER_MS = 900;
+const minWait = (startTime) =>
+  new Promise((r) =>
+    setTimeout(r, Math.max(0, MIN_LOADER_MS - (Date.now() - startTime)))
+  );
+
+const GoogleIcon = () => (
+  <svg viewBox="0 0 24 24" className="w-5 h-5" xmlns="http://www.w3.org/2000/svg">
+    <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
+    <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />
+    <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05" />
+    <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" />
+  </svg>
+);
 
 const Register = () => {
   const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
-    age: "",
-    gender: "",
+    name: "", email: "", password: "", confirmPassword: "", age: "", gender: "",
   });
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
-  const { register } = useAuth();
+  const [showPassword,        setShowPassword]        = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [error,         setError]         = useState("");
+  const [loading,       setLoading]       = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
+
+  const { register, setUser } = useAuth();
   const navigate = useNavigate();
 
+  const overlayVisible = loading || googleLoading;
+  const overlayMessage = googleLoading ? "Signing up with Google…" : "Creating your account…";
+
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+    setFormData({ ...formData, [e.target.name]: e.target.value });
     setError("");
   };
 
+
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
 
-    // Validation
-    if (!formData.name.trim()) {
-      setError("Please enter your name");
-      return;
-    }
-
-    if (!formData.email.trim()) {
-      setError("Please enter your email");
-      return;
-    }
-
-    if (!formData.password) {
-      setError("Please enter a password");
-      return;
-    }
-
-    if (formData.password !== formData.confirmPassword) {
-      setError("Passwords do not match");
-      return;
-    }
-
-    if (formData.password.length < 6) {
-      setError("Password must be at least 6 characters long");
-      return;
-    }
-
-    if (!formData.age || formData.age < 1 || formData.age > 120) {
-      setError("Please enter a valid age");
-      return;
-    }
-
-    if (!formData.gender) {
-      setError("Please select your gender");
-      return;
-    }
+    if (!formData.name.trim())                               return setError("Please enter your name");
+    if (!formData.email.trim())                              return setError("Please enter your email");
+    if (!formData.password)                                  return setError("Please enter a password");
+    if (formData.password !== formData.confirmPassword)      return setError("Passwords do not match");
+    if (formData.password.length < 6)                        return setError("Password must be at least 6 characters");
+    if (!formData.age || formData.age < 1 || formData.age > 120) return setError("Please enter a valid age");
+    if (!formData.gender)                                    return setError("Please select your gender");
 
     setLoading(true);
-
+    const t0 = Date.now();
     try {
-      
+
       const { confirmPassword, ...registerData } = formData;
 
 
       registerData.age = parseInt(registerData.age);
-
-      console.log("Submitting registration data:", registerData);
-
+      
       await register(registerData);
+      await minWait(t0);
       navigate("/dashboard");
     } catch (err) {
-      console.error("Registration error:", err);
-      setError(
-        err.response?.data?.message ||
-          err.message ||
-          "Registration failed. Please try again."
-      );
+      setError(err.response?.data?.message || err.message || "Registration failed. Please try again.");
     } finally {
       setLoading(false);
     }
   };
 
+ 
+  
+  const googleOAuth = useGoogleLogin({
+    onSuccess: async (tokenResponse) => {
+      setGoogleLoading(true);
+      const t0 = Date.now();
+      try {
+        const userInfoRes = await fetch("https://www.googleapis.com/oauth2/v3/userinfo", {
+          headers: { Authorization: `Bearer ${tokenResponse.access_token}` },
+        });
+        const userInfo = await userInfoRes.json();
+        const backendRes = await authAPI.googleAuth({
+          googleId:    userInfo.sub,
+          email:       userInfo.email,
+          name:        userInfo.name,
+          picture:     userInfo.picture,
+          accessToken: tokenResponse.access_token,
+        });
+        const { token, ...userData } = backendRes.data;
+        localStorage.setItem("token", token);
+        localStorage.setItem("user", JSON.stringify(userData));
+        setUser(userData);
+        await minWait(t0);
+        navigate("/dashboard");
+      } catch {
+        setError("Google sign-up failed. Please try again.");
+      } finally {
+        setGoogleLoading(false);
+      }
+    },
+    onError: () => setError("Google sign-up was cancelled or failed."),
+  });
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-gray-100 via-blue-50 to-blue-100 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full">
-        <div className="bg-white rounded-2xl shadow-xl p-8">
-          <div className="text-center mb-8">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-primary-100 rounded-full mb-4">
-              <UserPlus className="w-8 h-8 text-primary-600" />
-            </div>
-            <h2 className="text-3xl font-bold text-gray-900">Create Account</h2>
-            <p className="mt-2 text-gray-600">Join HealthAI today</p>
-          </div>
+    <>
+      <LoadingOverlay isVisible={overlayVisible} message={overlayMessage} />
 
-          {error && (
-            <div className="mb-6 p-4 bg-danger-50 border border-danger-200 rounded-lg flex items-start space-x-3">
-              <AlertCircle className="w-5 h-5 text-danger-500 flex-shrink-0 mt-0.5" />
-              <p className="text-sm text-danger-700">{error}</p>
-            </div>
-          )}
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-gray-100 via-blue-50 to-blue-100 py-8 px-4 sm:px-6 lg:px-8">
+        <div className="w-full max-w-md">
+          <div className="bg-white rounded-2xl shadow-xl p-6 sm:p-8">
 
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label
-                htmlFor="name"
-                className="block text-sm font-medium text-gray-700 mb-2"
-              >
-                Full Name *
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <User className="h-5 w-5 text-gray-400" />
-                </div>
-                <input
-                  id="name"
-                  name="name"
-                  type="text"
-                  required
-                  value={formData.name}
-                  onChange={handleChange}
-                  className="input-field pl-10"
-                  placeholder="Your Full Name"
-                />
+           
+            <div className="text-center mb-6">
+              <div className="inline-flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16 bg-primary-100 rounded-full mb-3">
+                <UserPlus className="w-7 h-7 sm:w-8 sm:h-8 text-primary-600" />
               </div>
+              <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">Create Account</h2>
+              <p className="mt-1.5 text-sm text-gray-600">Join HealthMateAI today</p>
             </div>
 
-            <div>
-              <label
-                htmlFor="email"
-                className="block text-sm font-medium text-gray-700 mb-2"
-              >
-                Email Address *
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Mail className="h-5 w-5 text-gray-400" />
-                </div>
-                <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  required
-                  value={formData.email}
-                  onChange={handleChange}
-                  className="input-field pl-10"
-                  placeholder="you@example.com"
-                />
+            
+            {error && (
+              <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg flex items-start space-x-3">
+                <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
+                <p className="text-sm text-red-700">{error}</p>
               </div>
-            </div>
+            )}
 
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label
-                  htmlFor="age"
-                  className="block text-sm font-medium text-gray-700 mb-2"
-                >
-                  Age *
-                </label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <Calendar className="h-5 w-5 text-gray-400" />
-                  </div>
-                  <input
-                    id="age"
-                    name="age"
-                    type="number"
-                    required
-                    min="1"
-                    max="120"
-                    value={formData.age}
-                    onChange={handleChange}
-                    className="input-field pl-10"
-                    placeholder="25"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label
-                  htmlFor="gender"
-                  className="block text-sm font-medium text-gray-700 mb-2"
-                >
-                  Gender *
-                </label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <Users className="h-5 w-5 text-gray-400" />
-                  </div>
-                  <select
-                    id="gender"
-                    name="gender"
-                    required
-                    value={formData.gender}
-                    onChange={handleChange}
-                    className="input-field pl-10 appearance-none"
-                  >
-                    <option value="">Select</option>
-                    <option value="male">Male</option>
-                    <option value="female">Female</option>
-                    <option value="other">Other</option>
-                  </select>
-                </div>
-              </div>
-            </div>
-
-            <div>
-              <label
-                htmlFor="password"
-                className="block text-sm font-medium text-gray-700 mb-2"
-              >
-                Password *
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Lock className="h-5 w-5 text-gray-400" />
-                </div>
-                <input
-                  id="password"
-                  name="password"
-                  type="password"
-                  required
-                  minLength="6"
-                  value={formData.password}
-                  onChange={handleChange}
-                  className="input-field pl-10"
-                  placeholder="••••••••"
-                />
-              </div>
-              <p className="text-xs text-gray-500 mt-1">Minimum 6 characters</p>
-            </div>
-
-            <div>
-              <label
-                htmlFor="confirmPassword"
-                className="block text-sm font-medium text-gray-700 mb-2"
-              >
-                Confirm Password *
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Lock className="h-5 w-5 text-gray-400" />
-                </div>
-                <input
-                  id="confirmPassword"
-                  name="confirmPassword"
-                  type="password"
-                  required
-                  minLength="6"
-                  value={formData.confirmPassword}
-                  onChange={handleChange}
-                  className="input-field pl-10"
-                  placeholder="••••••••"
-                />
-              </div>
-            </div>
-
+            
             <button
-              type="submit"
-              disabled={loading}
-              className="w-full btn-primary flex bg-gradient-to-r from-blue-500 via-blue-700 to-blue-500 hover:scale-105 active:scale-10 disabled:opacity-70 hover:shadow-md items-center justify-center space-x-2 disabled:cursor-not-allowed"
+              type="button"
+              onClick={() => googleOAuth()}
+              disabled={googleLoading || loading}
+              className="w-full flex items-center justify-center space-x-3 px-4 py-2.5 sm:py-3 border-2 border-gray-200 rounded-xl bg-white hover:bg-gray-50 hover:border-gray-300 transition-all text-sm font-medium text-gray-700 disabled:opacity-60 disabled:cursor-not-allowed shadow-sm mb-4"
             >
-              {loading ? (
-                <>
-                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-                  <span>Creating account...</span>
-                </>
+              {googleLoading ? (
+                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-gray-600" />
               ) : (
-                <>
-                  <UserPlus className="w-5 h-5" />
-                  <span>Create Account</span>
-                </>
+                <GoogleIcon />
               )}
+              <span>{googleLoading ? "Signing up with Google…" : "Continue with Google"}</span>
             </button>
-          </form>
 
-          <div className="mt-6 text-center">
-            <p className="text-sm text-gray-600">
+            {/* Divider */}
+            <div className="flex items-center mb-4">
+              <div className="flex-1 border-t border-gray-200" />
+              <span className="px-3 text-xs text-gray-400 uppercase tracking-wider">or register with email</span>
+              <div className="flex-1 border-t border-gray-200" />
+            </div>
+
+            
+            <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
+
+              <div>
+                <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1.5">Full Name *</label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <User className="h-5 w-5 text-gray-400" />
+                  </div>
+                  <input id="name" name="name" type="text" required
+                    value={formData.name} onChange={handleChange}
+                    className="input-field pl-10 w-full" placeholder="Your Full Name" />
+                </div>
+              </div>
+
+              <div>
+                <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1.5">Email Address *</label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <Mail className="h-5 w-5 text-gray-400" />
+                  </div>
+                  <input id="email" name="email" type="email" required
+                    value={formData.email} onChange={handleChange}
+                    className="input-field pl-10 w-full" placeholder="you@example.com" />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3 sm:gap-4">
+                <div>
+                  <label htmlFor="age" className="block text-sm font-medium text-gray-700 mb-1.5">Age *</label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <Calendar className="h-5 w-5 text-gray-400" />
+                    </div>
+                    <input id="age" name="age" type="number" required min="1" max="120"
+                      value={formData.age} onChange={handleChange}
+                      className="input-field pl-10 w-full" placeholder="25" />
+                  </div>
+                </div>
+                <div>
+                  <label htmlFor="gender" className="block text-sm font-medium text-gray-700 mb-1.5">Gender *</label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <Users className="h-5 w-5 text-gray-400" />
+                    </div>
+                    <select id="gender" name="gender" required
+                      value={formData.gender} onChange={handleChange}
+                      className="input-field pl-10 w-full appearance-none">
+                      <option value="">Select</option>
+                      <option value="male">Male</option>
+                      <option value="female">Female</option>
+                      <option value="other">Other</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1.5">Password *</label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <Lock className="h-5 w-5 text-gray-400" />
+                  </div>
+                  <input id="password" name="password"
+                    type={showPassword ? "text" : "password"}
+                    required minLength="6"
+                    value={formData.password} onChange={handleChange}
+                    className="input-field pl-10 pr-11 w-full" placeholder="••••••••" />
+                  <button type="button" tabIndex={-1}
+                    onClick={() => setShowPassword((v) => !v)}
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 transition-colors"
+                    aria-label={showPassword ? "Hide password" : "Show password"}>
+                    {showPassword ? <Eye className="h-5 w-5" /> : <EyeOff className="h-5 w-5" />}
+                  </button>
+                </div>
+                <p className="text-xs text-gray-500 mt-1">Minimum 6 characters</p>
+              </div>
+
+              <div>
+                <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-1.5">Confirm Password *</label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <Lock className="h-5 w-5 text-gray-400" />
+                  </div>
+                  <input id="confirmPassword" name="confirmPassword"
+                    type={showConfirmPassword ? "text" : "password"}
+                    required minLength="6"
+                    value={formData.confirmPassword} onChange={handleChange}
+                    className="input-field pl-10 pr-11 w-full" placeholder="••••••••" />
+                  <button type="button" tabIndex={-1}
+                    onClick={() => setShowConfirmPassword((v) => !v)}
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 transition-colors"
+                    aria-label={showConfirmPassword ? "Hide password" : "Show password"}>
+                    {showConfirmPassword ? <Eye className="h-5 w-5" /> : <EyeOff className="h-5 w-5" />}
+                  </button>
+                </div>
+              </div>
+
+              <button type="submit" disabled={loading || googleLoading}
+                className="w-full btn-primary flex bg-gradient-to-r from-blue-500 via-blue-700 to-blue-500 hover:scale-[1.02] active:scale-95 disabled:opacity-70 hover:shadow-md items-center justify-center space-x-2 disabled:cursor-not-allowed py-2.5 sm:py-3 text-sm sm:text-base">
+                {loading ? (
+                  <>
+                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white" />
+                    <span>Creating account…</span>
+                  </>
+                ) : (
+                  <>
+                    <UserPlus className="w-5 h-5" />
+                    <span>Create Account</span>
+                  </>
+                )}
+              </button>
+            </form>
+
+            <p className="mt-5 text-center text-sm text-gray-600">
               Already have an account?{" "}
-              <Link
-                to="/login"
-                className="font-medium text-primary-700 hover:text-primary-500"
-              >
+              <Link to="/login" className="font-medium text-primary-700 hover:text-primary-500 underline-offset-2 hover:underline">
                 Sign in
               </Link>
             </p>
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 
