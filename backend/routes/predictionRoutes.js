@@ -1,12 +1,13 @@
 const express = require("express");
 const router = express.Router();
-const { getStats } = require("../controllers/predictionController");
+
 const {
   createPrediction,
   getUserPredictions,
   getPredictionById,
   getHealthStats,
 } = require("../controllers/predictionController");
+
 const { protect } = require("../middleware/auth");
 
 router.post("/", protect, createPrediction);

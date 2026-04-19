@@ -1,8 +1,8 @@
-const express    = require("express");
-const cors       = require("cors");
-const helmet     = require("helmet");
-const dotenv     = require("dotenv");
-const connectDB  = require("./config/db");
+const express   = require("express");
+const cors      = require("cors");
+const helmet    = require("helmet");
+const dotenv    = require("dotenv");
+const connectDB = require("./config/db");
 
 dotenv.config();
 
@@ -17,62 +17,46 @@ app.use(helmet());
 
 const allowedOrigins = [
   "http://localhost:3000",
-  "http://localhost:3000/",
+
   "http://localhost:5173",
   "http://127.0.0.1:5173",
   "http://127.0.0.1:3000",
   process.env.FRONTEND_URL,
 ].filter(Boolean);
+
 app.use(
   cors({
-    origin: function (origin, callback) {
+    origin: (origin, callback) => {
       if (!origin) return callback(null, true);
-
-      if (
-        allowedOrigins.includes(origin) ||
-        origin.endsWith(".vercel.app")
-      ) {
+      if (allowedOrigins.includes(origin) || origin.endsWith(".vercel.app"))
         return callback(null, true);
-      }
+
 
       return callback(new Error(`CORS blocked: ${origin}`));
     },
     credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
-// app.use(
-//   cors({
-//     origin: (origin, callback) => {
-      
-//       if (!origin) return callback(null, true);
-
-//       if (
-//         allowedOrigins.includes(origin)) return callback(null, true);
-//         callback(new Error(`CORS blocked: ${origin} is not allowed`));
-//     },
-//     credentials: true,
-//     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-//     allowedHeaders: ["Content-Type", "Authorization"],
-//   })
-// );
 
 
-app.use(express.json({ limit: "10kb" }));
-app.use(express.urlencoded({ extended: true, limit: "10kb" }));
+app.use(express.json({ limit: "5mb" }));
+app.use(express.urlencoded({ extended: true, limit: "5mb" }));
 
 
 try {
   const mongoSanitize = require("express-mongo-sanitize");
   app.use(mongoSanitize());
 } catch {
-  console.log("express-mongo-sanitize not installed — skipping NoSQL sanitization");
+  console.log("express-mongo-sanitize not installed — skipping");
 }
 
 try {
   const xss = require("xss-clean");
   app.use(xss());
 } catch {
-  console.log("xss-clean not installed — skipping XSS sanitization");
+  console.log("xss-clean not installed — skipping");
 }
 
 
@@ -96,37 +80,24 @@ try {
   });
 
   const predictionLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-
-  max: process.env.NODE_ENV === "development" ? 1000 : 100,
-
-  standardHeaders: true,
-  legacyHeaders: false,
-
-  message: {
-    message: "Too many prediction requests, please try again after 15 minutes",
-  },
-
-  
-  skip: (req) => {
-    return (
-      req.ip === "127.0.0.1" ||
-      req.ip === "::1" ||
-      req.hostname === "localhost"
-    );
-  },
-});
-
+    windowMs: 15 * 60 * 1000,
+    max: process.env.NODE_ENV === "development" ? 1000 : 100,
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: { message: "Too many prediction requests, please try again after 15 minutes" },
+    skip: (req) =>
+      req.ip === "127.0.0.1" || req.ip === "::1" || req.hostname === "localhost",
+  });
 
   app.use("/api/", globalLimiter);
   app.use("/api/auth/", authLimiter);
   app.use("/api/predictions/", predictionLimiter);
 } catch {
-  console.log("express-rate-limit not installed — skipping rate limiting");
+  console.log("express-rate-limit not installed — skipping");
 }
 
 
-const authRoutes = require("./routes/authRoutes");
+const authRoutes       = require("./routes/authRoutes");
 const predictionRoutes = require("./routes/predictionRoutes");
 
 app.get("/api/health", (req, res) => {
@@ -137,6 +108,7 @@ app.get("/api/health", (req, res) => {
     timestamp: new Date().toISOString(),
   });
 });
+
 
 app.use("/api/auth", authRoutes);
 app.use("/api/predictions", predictionRoutes);
@@ -153,6 +125,7 @@ app.use((err, req, res, next) => {
     message: err.message || "Internal server error",
   });
 });
+
 
 
 const PORT = process.env.PORT || 5000;
