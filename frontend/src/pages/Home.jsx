@@ -9,7 +9,7 @@ import {
   Zap,
   Users,
   Award,
-
+  Minus,
 } from "lucide-react";
 import { useAuth } from "../contexts/AuthContext";
 
@@ -83,14 +83,14 @@ const Home = () => {
                 <>
                   <Link
                     to="/dashboard"
-                    className="inline-flex items-center justify-center bg-primary-500 text-white px-8 py-3 rounded-lg text-lg font-semibold hover:bg-primary-600 transition-colors shadow-lg hover:shadow-xl"
+                    className="inline-flex items-center justify-center bg-primary-500 !text-gray-50 px-8 py-3 rounded-lg text-lg font-semibold hover:bg-primary-600 transition-colors shadow-lg hover:shadow-xl"
                   >
                     Go to Dashboard
                     <ArrowRight className="ml-2 w-5 h-5" />
                   </Link>
                   <Link
                     to="/predict"
-                    className="inline-flex items-center justify-center bg-secondary-500 text-white px-8 py-3 rounded-lg text-lg font-semibold hover:bg-secondary-600 transition-colors shadow-lg hover:shadow-xl"
+                    className="inline-flex items-center justify-center bg-secondary-500 !text-gray-50 px-8 py-3 rounded-lg text-lg font-semibold hover:bg-secondary-600 transition-colors shadow-lg hover:shadow-xl"
                   >
                     New Health Check
                   </Link>
@@ -99,7 +99,7 @@ const Home = () => {
                 <>
                   <Link
                     to="/register"
-                    className="inline-flex items-center justify-center bg-gradient-to-r from-blue-500 via-blue-700 to-blue-500 hover:scale-105 active:scale-10 disabled:opacity-70 hover:shadow-md text-white px-8 py-3 rounded-lg text-lg font-semibold hover:bg-primary-600 transition-colors shadow-lg"
+                    className="inline-flex items-center justify-center border-0 dark:border dark:border-[#30363d] bg-gradient-to-r from-blue-500 via-blue-700 to-blue-500 hover:scale-105 active:scale-95 disabled:opacity-70 hover:shadow-md text-white px-8 py-3 rounded-lg text-lg font-semibold transition-all shadow-lg"
                   >
                     Get Started Free
                     <ArrowRight className="ml-2 w-5 h-5" />
@@ -114,8 +114,7 @@ const Home = () => {
               )}
             </div>
           </div>
-
-
+          
           <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8 ">
             {stats.map((stat, index) => (
               <div
@@ -134,8 +133,15 @@ const Home = () => {
           </div>
         </div>
       </div>
+
       
-      <div className="py-20 bg-white">
+      <div className="flex items-center bg-gradient-to-r bg-gray-100 h-[1px] dark:bg-[#0d1117] my-0">
+        <div className="flex-1 h-px bg-gray-300 dark:bg-[#30363d]" />
+
+        <div className="flex-1 h-px bg-gray-300 dark:bg-[#30363d]" />
+      </div>
+
+      <div className="py-20 bg-gradient-to-r from-gray-100 via-blue-50 to-blue-100 dark:bg-[#0d1117]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
@@ -162,15 +168,16 @@ const Home = () => {
           </div>
         </div>
       </div>
-      
+
       {!user && (
-        <div className="py-20 bg-gradient-to-r from-primary-500 via-blue-800 to-primary-500">
+        <div className="py-20 keep-gradient bg-gradient-to-r from-blue-600 via-blue-800 to-blue-600">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <h2 className="text-3xl sm:text-4xl font-bold text-white mb-6">
               Ready to Take Control of Your Health?
             </h2>
             <p className="text-xl text-primary-100 mb-8 max-w-2xl mx-auto">
-              Join for early disease detection, risk assessment, personalized health insights monitoring and predictions
+              Join for early disease detection, risk assessment, personalized
+              health insights monitoring and predictions
             </p>
             <Link
               to="/register"
@@ -182,7 +189,8 @@ const Home = () => {
           </div>
         </div>
       )}
-       <div className="py-20 bg-white">
+
+      <div className="py-20 bg-gradient-to-r from-gray-100 via-blue-50 to-blue-100 dark:bg-[#0d1117]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
@@ -222,6 +230,12 @@ const Home = () => {
         </div>
       </div>
 
+
+      <div className="flex items-center bg-gradient-to-r bg-gray-100 h-[1px] my-0">
+        <div className="flex-1 h-px bg-gray-300 dark:bg-[#30363d]" />
+
+        <div className="flex-1 h-px bg-gray-300 dark:bg-[#30363d]" />
+      </div>
 
       <div className="py-20 bg-gradient-to-r from-gray-100 via-blue-50 to-blue-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -263,9 +277,9 @@ const Home = () => {
           </div>
         </div>
       </div>
+      
 
-      
-      
+
     </div>
   );
 };

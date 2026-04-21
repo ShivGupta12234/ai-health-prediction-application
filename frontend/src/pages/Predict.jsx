@@ -2,20 +2,32 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { predictionsAPI } from "../services/api";
 import {
-  Stethoscope, Activity, Thermometer, Heart, Wind,
-  AlertCircle, Plus, X, ArrowRight, Droplets, ArrowLeft,
+  Stethoscope,
+  Activity,
+  Thermometer,
+  Heart,
+  Wind,
+  AlertCircle,
+  Plus,
+  X,
+  ArrowRight,
+  Droplets,
+  ArrowLeft,
 } from "lucide-react";
 import LoadingOverlay from "../components/common/LoadingOverlay";
 
 const Predict = () => {
   const [symptoms, setSymptoms] = useState([""]);
   const [vitalSigns, setVitalSigns] = useState({
-    heartRate: "", bloodPressure: "", temperature: "", oxygenLevel: "",
+    heartRate: "",
+    bloodPressure: "",
+    temperature: "",
+    oxygenLevel: "",
   });
   const [loading, setLoading] = useState(false);
-  const [error, setError]     = useState("");
+  const [error, setError] = useState("");
   const navigate = useNavigate();
-
+  
 
   const [backLoading, setBackLoading] = useState(false);
 
@@ -29,18 +41,60 @@ const Predict = () => {
   };
 
   const commonSymptoms = [
-    "Fever","Cough","Headache","Fatigue","Body aches","Sore throat",
-    "Runny nose","Chest pain","Difficulty breathing","Nausea","Vomiting",
-    "Diarrhea","Loss of taste","Loss of smell","Dizziness","Blurred vision",
-    "Shortness of breath","Wheezing","Sneezing","Stomach pain","Bloating",
-    "Loss of appetite","Increased thirst","Frequent urination","Extreme hunger",
-    "Itchy eyes","Nasal congestion","Sensitivity to light","Muscle weakness",
-    "Joint pain","Skin rash","Itching","Yellowing of skin","Night sweats",
-    "Weight loss","Swollen lymph nodes","Chills","High fever","Back pain",
-    "Neck stiffness","Anxiety","Restlessness","Excessive worry",
-    "Persistent sadness","Sleep disturbance","Muscle tension","Facial pain",
-    "Thick nasal discharge","Mucus production","Chest tightness",
-    "Rapid breathing","Slow healing wounds","Watery eyes","Throbbing pain",
+    "Fever",
+    "Cough",
+    "Headache",
+    "Fatigue",
+    "Body aches",
+    "Sore throat",
+    "Runny nose",
+    "Chest pain",
+    "Difficulty breathing",
+    "Nausea",
+    "Vomiting",
+    "Diarrhea",
+    "Loss of taste",
+    "Loss of smell",
+    "Dizziness",
+    "Blurred vision",
+    "Shortness of breath",
+    "Wheezing",
+    "Sneezing",
+    "Stomach pain",
+    "Bloating",
+    "Loss of appetite",
+    "Increased thirst",
+    "Frequent urination",
+    "Extreme hunger",
+    "Itchy eyes",
+    "Nasal congestion",
+    "Sensitivity to light",
+    "Muscle weakness",
+    "Joint pain",
+    "Skin rash",
+    "Itching",
+    "Yellowing of skin",
+    "Night sweats",
+    "Weight loss",
+    "Swollen lymph nodes",
+    "Chills",
+    "High fever",
+    "Back pain",
+    "Neck stiffness",
+    "Anxiety",
+    "Restlessness",
+    "Excessive worry",
+    "Persistent sadness",
+    "Sleep disturbance",
+    "Muscle tension",
+    "Facial pain",
+    "Thick nasal discharge",
+    "Mucus production",
+    "Chest tightness",
+    "Rapid breathing",
+    "Slow healing wounds",
+    "Watery eyes",
+    "Throbbing pain",
   ];
 
   const handleSymptomChange = (index, value) => {
@@ -50,9 +104,10 @@ const Predict = () => {
     setError("");
   };
 
-  const addSymptom    = () => setSymptoms([...symptoms, ""]);
+  const addSymptom = () => setSymptoms([...symptoms, ""]);
   const removeSymptom = (index) => {
-    if (symptoms.length > 1) setSymptoms(symptoms.filter((_, i) => i !== index));
+    if (symptoms.length > 1)
+      setSymptoms(symptoms.filter((_, i) => i !== index));
   };
 
   const handleVitalChange = (e) => {
@@ -72,24 +127,36 @@ const Predict = () => {
     setError("");
 
     const filteredSymptoms = symptoms.filter((s) => s.trim() !== "");
-    if (filteredSymptoms.length === 0) { setError("Please enter at least one symptom"); return; }
+    if (filteredSymptoms.length === 0) {
+      setError("Please enter at least one symptom");
+      return;
+    }
     setLoading(true);
 
     try {
       const predictionData = {
         symptoms: filteredSymptoms,
         vitalSigns: {
-          heartRate:     vitalSigns.heartRate     ? parseInt(vitalSigns.heartRate)     : null,
-          bloodPressure: vitalSigns.bloodPressure  || null,
-          temperature:   vitalSigns.temperature   ? parseFloat(vitalSigns.temperature) : null,
-          oxygenLevel:   vitalSigns.oxygenLevel   ? parseFloat(vitalSigns.oxygenLevel) : null,
+          heartRate: vitalSigns.heartRate
+            ? parseInt(vitalSigns.heartRate)
+            : null,
+          bloodPressure: vitalSigns.bloodPressure || null,
+          temperature: vitalSigns.temperature
+            ? parseFloat(vitalSigns.temperature)
+            : null,
+          oxygenLevel: vitalSigns.oxygenLevel
+            ? parseFloat(vitalSigns.oxygenLevel)
+            : null,
         },
       };
 
       const response = await predictionsAPI.create(predictionData);
       navigate("/result", { state: { prediction: response.data } });
     } catch (err) {
-      setError(err.response?.data?.message || "Failed to create prediction. Please try again.");
+      setError(
+        err.response?.data?.message ||
+          "Failed to create prediction. Please try again.",
+      );
     } finally {
       setLoading(false);
     }
@@ -97,18 +164,27 @@ const Predict = () => {
 
   return (
     <>
-      
-      <LoadingOverlay isVisible={backLoading} message="Redirecting to your dashboard..." />
+      <LoadingOverlay
+        isVisible={backLoading}
+        message="Redirecting to your dashboard..."
+      />
 
-      <div className="min-h-screen bg-gradient-to-br from-gray-100 via-blue-50 to-blue-100 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="min-h-screen bg-gradient-to-r from-gray-100 via-blue-50 to-blue-100 py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto">
-
           
+
           <div className="mb-6">
             <button
               onClick={handleBackToDashboard}
               disabled={backLoading || loading}
-              className="inline-flex btn-primary bg-gradient-to-r from-blue-500 via-primary-700 to-blue-500 px-8 py-3 text-center shadow-lg hover:shadow-xl hover:bg-blue-50 hover:scale-105 active:scale-95 disabled:opacity-70 items-center justify-center disabled:cursor-not-allowed transition-all"
+              className="inline-flex btn-primary bg-gradient-to-r from-blue-500 via-primary-700 to-blue-500 
+px-8 py-3 text-center shadow-lg hover:shadow-xl 
+hover:bg-blue-50 dark:hover:bg-[#21262d]
+hover:scale-105 active:scale-95 
+items-center justify-center 
+border-0 dark:border dark:border-[#30363d] 
+disabled:opacity-70 disabled:cursor-not-allowed 
+transition-all"
             >
               <ArrowLeft className="w-4 h-4" />
               <span>Back to Dashboard</span>
@@ -116,11 +192,14 @@ const Predict = () => {
           </div>
 
           <div className="text-center mb-8">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-primary-100 rounded-full mb-4">
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-primary-100 dark:bg-[#1c2230] rounded-full mb-4">
               <Stethoscope className="w-8 h-8 text-primary-600" />
             </div>
-            <h1 className="text-3xl sm:text-4xl font-bold text-black mb-2">Health Assessment</h1>
-            <p className="text-gray-800">
+            <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-gray-900 mb-2">
+              Health Assessment
+            </h1>
+            <p className="text-gray-600 dark:text-black-500">
+              {" "}
               Enter your symptoms and vital signs for AI-powered health analysis
             </p>
           </div>
@@ -133,14 +212,14 @@ const Predict = () => {
           )}
 
           <form onSubmit={handleSubmit} className="space-y-8">
-            
-            <div className="card">
+            <div className="card bg-gradient-to-r from-gray-50 via-blue-50 to-gray-50">
               <h2 className="text-2xl font-semibold text-gray-900 mb-4 flex items-center">
                 <Activity className="w-6 h-6 mr-2 text-primary-500" />
                 Symptoms
               </h2>
               <p className="text-sm text-gray-600 mb-4">
-                Select from common symptoms or type your own. Be as specific as possible.
+                Select from common symptoms or type your own. Be as specific as
+                possible.
               </p>
               <div className="space-y-4">
                 {symptoms.map((symptom, index) => (
@@ -149,7 +228,9 @@ const Predict = () => {
                       <input
                         type="text"
                         value={symptom}
-                        onChange={(e) => handleSymptomChange(index, e.target.value)}
+                        onChange={(e) =>
+                          handleSymptomChange(index, e.target.value)
+                        }
                         placeholder={`Symptom ${index + 1} (e.g., Fever, Headache)`}
                         list="common-symptoms"
                         className="input-field pr-10"
@@ -187,7 +268,9 @@ const Predict = () => {
                 </button>
               </div>
               <div className="mt-6 pt-6 border-t border-gray-200">
-                <p className="text-sm font-medium text-gray-700 mb-3">Quick Select Common Symptoms:</p>
+                <p className="text-sm font-medium text-gray-700 mb-3">
+                  Quick Select Common Symptoms:
+                </p>
                 <div className="flex flex-wrap gap-2">
                   {commonSymptoms.map((symptom, index) => (
                     <button
@@ -207,15 +290,17 @@ const Predict = () => {
               </div>
             </div>
 
-            
-            <div className="card">
+            <div className="card bg-gradient-to-r from-gray-50 via-blue-50 to-gray-50">
               <h2 className="text-2xl font-semibold text-gray-900 mb-4 flex items-center">
                 <Heart className="w-6 h-6 mr-2 text-danger-500" />
                 Vital Signs
-                <span className="ml-2 text-sm font-normal text-gray-500">(Optional but Recommended)</span>
+                <span className="ml-2 text-sm font-normal text-gray-500">
+                  (Optional but Recommended)
+                </span>
               </h2>
               <p className="text-sm text-gray-600 mb-6">
-                Providing vital signs significantly improves prediction accuracy and risk assessment
+                Providing vital signs significantly improves prediction accuracy
+                and risk assessment
               </p>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
@@ -225,9 +310,20 @@ const Predict = () => {
                       <span>Heart Rate (bpm)</span>
                     </div>
                   </label>
-                  <input type="number" name="heartRate" value={vitalSigns.heartRate}
-                    onChange={handleVitalChange} placeholder="e.g., 72" min="30" max="200" className="input-field" />
-                  <p className="text-xs text-gray-500 mt-1"><span className="font-medium">Normal range:</span> 60-100 bpm</p>
+                  <input
+                    type="number"
+                    name="heartRate"
+                    value={vitalSigns.heartRate}
+                    onChange={handleVitalChange}
+                    placeholder="e.g., 72"
+                    min="30"
+                    max="200"
+                    className="input-field"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">
+                    <span className="font-medium">Normal range:</span> 60-100
+                    bpm
+                  </p>
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -236,9 +332,19 @@ const Predict = () => {
                       <span>Blood Pressure (mmHg)</span>
                     </div>
                   </label>
-                  <input type="text" name="bloodPressure" value={vitalSigns.bloodPressure}
-                    onChange={handleVitalChange} placeholder="e.g., 120/80" pattern="[0-9]{2,3}/[0-9]{2,3}" className="input-field" />
-                  <p className="text-xs text-gray-500 mt-1"><span className="font-medium">Normal range:</span> 120/80 mmHg</p>
+                  <input
+                    type="text"
+                    name="bloodPressure"
+                    value={vitalSigns.bloodPressure}
+                    onChange={handleVitalChange}
+                    placeholder="e.g., 120/80"
+                    pattern="[0-9]{2,3}/[0-9]{2,3}"
+                    className="input-field"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">
+                    <span className="font-medium">Normal range:</span> 120/80
+                    mmHg
+                  </p>
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -247,9 +353,21 @@ const Predict = () => {
                       <span>Body Temperature (°C)</span>
                     </div>
                   </label>
-                  <input type="number" name="temperature" value={vitalSigns.temperature}
-                    onChange={handleVitalChange} placeholder="e.g., 37.0" step="0.1" min="35" max="42" className="input-field" />
-                  <p className="text-xs text-gray-500 mt-1"><span className="font-medium">Normal range:</span> 36.5-37.5 °C</p>
+                  <input
+                    type="number"
+                    name="temperature"
+                    value={vitalSigns.temperature}
+                    onChange={handleVitalChange}
+                    placeholder="e.g., 37.0"
+                    step="0.1"
+                    min="35"
+                    max="42"
+                    className="input-field"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">
+                    <span className="font-medium">Normal range:</span> 36.5-37.5
+                    °C
+                  </p>
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -258,14 +376,23 @@ const Predict = () => {
                       <span>Oxygen Saturation (%)</span>
                     </div>
                   </label>
-                  <input type="number" name="oxygenLevel" value={vitalSigns.oxygenLevel}
-                    onChange={handleVitalChange} placeholder="e.g., 98" min="70" max="100" className="input-field" />
-                  <p className="text-xs text-gray-500 mt-1"><span className="font-medium">Normal range:</span> 95-100 %</p>
+                  <input
+                    type="number"
+                    name="oxygenLevel"
+                    value={vitalSigns.oxygenLevel}
+                    onChange={handleVitalChange}
+                    placeholder="e.g., 98"
+                    min="70"
+                    max="100"
+                    className="input-field"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">
+                    <span className="font-medium">Normal range:</span> 95-100 %
+                  </p>
                 </div>
               </div>
             </div>
 
-            
             <div className="bg-primary-50 border-l-4 border-primary-500 p-4 rounded-lg">
               <div className="flex">
                 <div className="flex-shrink-0">
@@ -273,9 +400,10 @@ const Predict = () => {
                 </div>
                 <div className="ml-3">
                   <p className="text-sm text-primary-700">
-                    <span className="font-medium">Note:</span> This AI-powered system provides
-                    preliminary health insights. Always consult with a healthcare professional
-                    for accurate diagnosis and treatment.
+                    <span className="font-medium">Note:</span> This AI-powered
+                    system provides preliminary health insights. Always consult
+                    with a healthcare professional for accurate diagnosis and
+                    treatment.
                   </p>
                 </div>
               </div>
@@ -285,7 +413,12 @@ const Predict = () => {
               <button
                 type="submit"
                 disabled={loading || backLoading}
-                className="btn-primary bg-gradient-to-r from-blue-500 via-primary-700 to-blue-500 px-10 py-4 text-lg flex items-center space-x-3 hover:scale-105 active:scale-95 disabled:opacity-70 disabled:cursor-not-allowed shadow-lg hover:shadow-xl transition-all"
+                className="btn-primary bg-gradient-to-r from-blue-500 via-primary-700 to-blue-500 
+px-10 py-4 text-lg flex items-center space-x-3 
+hover:scale-105 active:scale-95 
+shadow-lg hover:shadow-xl transition-all
+border-0 dark:border dark:border-[#30363d]
+disabled:opacity-70 disabled:cursor-not-allowed"
               >
                 {loading ? (
                   <>

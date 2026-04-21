@@ -259,7 +259,14 @@ const Register = () => {
               </div>
 
               <button type="submit" disabled={loading || googleLoading}
-                className="w-full btn-primary flex bg-gradient-to-r from-blue-500 via-blue-700 to-blue-500 hover:scale-[1.02] active:scale-95 disabled:opacity-70 hover:shadow-md items-center justify-center space-x-2 disabled:cursor-not-allowed py-2.5 sm:py-3 text-sm sm:text-base">
+                className="w-full btn-primary flex 
+bg-gradient-to-r from-blue-500 via-blue-700 to-blue-500 
+hover:scale-[1.02] active:scale-95 
+items-center justify-center space-x-2 
+py-2.5 sm:py-3 text-sm sm:text-base 
+transition-all shadow-md hover:shadow-md
+border-0 dark:border dark:border-[#30363d]
+disabled:opacity-70 disabled:cursor-not-allowed">
                 {loading ? (
                   <>
                     <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white" />

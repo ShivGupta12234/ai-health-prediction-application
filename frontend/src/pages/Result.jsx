@@ -20,17 +20,17 @@ import {
 } from "lucide-react";
 import { generateHealthReport } from "../utils/generatePDF";
 import LoadingOverlay from "../components/common/LoadingOverlay";
-
+import EmergencySOS from "../components/result/EmergencySOS";
 
 const NAV_DELAY_MS = 800;
 
 const Result = () => {
-  const location   = useLocation();
-  const navigate   = useNavigate();
+  const location = useLocation();
+  const navigate = useNavigate();
   const prediction = location.state?.prediction;
 
-  const [pdfLoading,  setPdfLoading]  = useState(false);
-  const [pdfSuccess,  setPdfSuccess]  = useState(false);
+  const [pdfLoading, setPdfLoading] = useState(false);
+  const [pdfSuccess, setPdfSuccess] = useState(false);
 
   const [dashLoading, setDashLoading] = useState(false);
 
@@ -62,7 +62,6 @@ const Result = () => {
     }
   };
 
-  
   const handleGoToDashboard = (e) => {
     e.preventDefault();
     if (dashLoading) return;
@@ -70,7 +69,6 @@ const Result = () => {
     setTimeout(() => navigate("/dashboard"), NAV_DELAY_MS);
   };
 
-  
   const handleNewAssessment = (e) => {
     e.preventDefault();
     if (newPredLoading) return;
@@ -78,34 +76,48 @@ const Result = () => {
     setTimeout(() => navigate("/predict"), NAV_DELAY_MS);
   };
 
-  
   const getRiskColor = (risk) => {
     switch (risk) {
-      case "Low":      return "text-secondary-600 bg-secondary-50 border-secondary-200";
-      case "Medium":   return "text-yellow-600 bg-yellow-50 border-yellow-200";
-      case "High":     return "text-orange-600 bg-orange-50 border-orange-200";
-      case "Critical": return "text-danger-600 bg-danger-50 border-danger-200";
-      default:         return "text-gray-600 bg-gray-50 border-gray-200";
+      case "Low":
+        return "text-secondary-600 bg-secondary-50 border-secondary-200";
+      case "Medium":
+        return "text-yellow-600 bg-yellow-50 border-yellow-200";
+      case "High":
+        return "text-orange-600 bg-orange-50 border-orange-200";
+      case "Critical":
+        return "text-danger-600 bg-danger-50 border-danger-200";
+      default:
+        return "text-gray-600 bg-gray-50 border-gray-200";
     }
   };
 
   const getRiskIcon = (risk) => {
     switch (risk) {
-      case "Low":      return <CheckCircle className="w-8 h-8" />;
-      case "Medium":   return <AlertTriangle className="w-8 h-8" />;
-      case "High":     return <AlertTriangle className="w-8 h-8" />;
-      case "Critical": return <AlertTriangle className="w-8 h-8 animate-pulse" />;
-      default:         return <Activity className="w-8 h-8" />;
+      case "Low":
+        return <CheckCircle className="w-8 h-8" />;
+      case "Medium":
+        return <AlertTriangle className="w-8 h-8" />;
+      case "High":
+        return <AlertTriangle className="w-8 h-8" />;
+      case "Critical":
+        return <AlertTriangle className="w-8 h-8 animate-pulse" />;
+      default:
+        return <Activity className="w-8 h-8" />;
     }
   };
 
   const getRiskMessage = (risk) => {
     switch (risk) {
-      case "Low":      return "Your health indicators appear stable. Continue monitoring your symptoms and try to maintain a healthy lifestyle.";
-      case "Medium":   return "Moderate health concern detected. Consider consulting a healthcare provider if the condition persists.";
-      case "High":     return "Elevated health risk identified. Medical consultation is strongly recommended to address potential issues.";
-      case "Critical": return "!! URGENT: Critical health risk detected. Seek immediate medical attention !!";
-      default:         return "Health assessment completed.";
+      case "Low":
+        return "Your health indicators appear stable. Continue monitoring your symptoms and try to maintain a healthy lifestyle.";
+      case "Medium":
+        return "Moderate health concern detected. Consider consulting a healthcare provider if the condition persists.";
+      case "High":
+        return "Elevated health risk identified. Medical consultation is strongly recommended to address potential issues.";
+      case "Critical":
+        return "!! URGENT: Critical health risk detected. Seek immediate medical attention !!";
+      default:
+        return "Health assessment completed.";
     }
   };
 
@@ -117,20 +129,30 @@ const Result = () => {
 
   return (
     <>
-      
-      <LoadingOverlay isVisible={dashLoading}    message="Redirecting to your dashboard..." />
-      
-      <LoadingOverlay isVisible={newPredLoading} message="Redirecting to new prediction page..." />
+      <LoadingOverlay
+        isVisible={dashLoading}
+        message="Redirecting to your dashboard..."
+      />
+
+      <LoadingOverlay
+        isVisible={newPredLoading}
+        message="Redirecting to new prediction page..."
+      />
 
       <div className="min-h-screen bg-gradient-to-r from-gray-100 via-blue-50 to-blue-100 py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-5xl mx-auto">
 
-          
+
           <div className="mb-6">
             <button
               onClick={handleGoToDashboard}
               disabled={dashLoading}
-              className="inline-flex btn-primary bg-gradient-to-r from-blue-500 via-primary-700 to-blue-500 px-8 py-3 text-center shadow-lg hover:shadow-xl hover:bg-blue-50 hover:scale-105 active:scale-95 disabled:opacity-70 items-center justify-center disabled:cursor-not-allowed"
+              className="inline-flex btn-primary bg-gradient-to-r from-blue-500 via-primary-700 to-blue-500 
+px-8 py-3 text-center shadow-lg hover:shadow-xl hover:bg-blue-50 
+hover:scale-105 active:scale-95 
+items-center justify-center 
+border-0 dark:border dark:border-[#30363d] 
+disabled:opacity-70 disabled:cursor-not-allowed"
             >
               <ArrowLeft className="w-4 h-4 mr-2 transition-colors" />
               Back to Dashboard
@@ -176,18 +198,28 @@ const Result = () => {
                     {prediction.predictedDisease}
                   </h2>
                   <div className="flex flex-wrap gap-3">
-                    <div className={`inline-flex items-center space-x-2 px-4 py-2 rounded-lg ${getConfidenceColor(prediction.confidence)}`}>
+                    <div
+                      className={`inline-flex items-center space-x-2 px-4 py-2 rounded-lg ${getConfidenceColor(prediction.confidence)}`}
+                    >
                       <TrendingUp className="w-4 h-4" />
-                      <span className="text-sm font-semibold">{prediction.confidence}% Confidence</span>
+                      <span className="text-sm font-semibold">
+                        {prediction.confidence}% Confidence
+                      </span>
                     </div>
-                    <div className={`inline-flex items-center space-x-2 px-4 py-2 rounded-lg border-2 ${getRiskColor(prediction.mortalityRisk?.risk)}`}>
+                    <div
+                      className={`inline-flex items-center space-x-2 px-4 py-2 rounded-lg border-2 ${getRiskColor(prediction.mortalityRisk?.risk)}`}
+                    >
                       <AlertTriangle className="w-4 h-4" />
-                      <span className="text-sm font-semibold">{prediction.mortalityRisk?.risk} Risk Level</span>
+                      <span className="text-sm font-semibold">
+                        {prediction.mortalityRisk?.risk} Risk Level
+                      </span>
                     </div>
                     {prediction.mlEnhanced && (
                       <div className="inline-flex items-center space-x-2 px-4 py-2 rounded-lg bg-green-50 text-green-700 border border-green-200">
                         <CheckCircle className="w-4 h-4" />
-                        <span className="text-sm font-semibold">ML Enhanced</span>
+                        <span className="text-sm font-semibold">
+                          ML Enhanced
+                        </span>
                       </div>
                     )}
                   </div>
@@ -196,7 +228,9 @@ const Result = () => {
             </div>
 
             <div
-              className={`rounded-lg p-6 mb-6 border-l-4 ${getRiskColor(prediction.mortalityRisk?.risk)
+              className={`rounded-lg p-6 mb-6 border-l-4 ${getRiskColor(
+                prediction.mortalityRisk?.risk,
+              )
                 .replace("bg-", "border-")
                 .replace("-50", "-500")}`}
             >
@@ -218,7 +252,6 @@ const Result = () => {
               </div>
             </div>
 
-            
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
               <div className="bg-gradient-to-br from-blue-600 via-blue-800 to-blue-600 rounded-xl p-6">
                 <h3 className="font-semibold text-lg text-white mb-4 flex items-center">
@@ -227,14 +260,17 @@ const Result = () => {
                 </h3>
                 <div className="space-y-2">
                   {prediction.symptoms.map((symptom, index) => (
-                    <div key={index} className="flex items-center text-sm text-white bg-white/10 px-3 py-2 rounded-lg">
+                    <div
+                      key={index}
+                      className="flex items-center text-sm text-white bg-white/10 px-3 py-2 rounded-lg"
+                    >
                       <span className="w-2 h-2 bg-white rounded-full mr-3 flex-shrink-0"></span>
                       <span className="font-medium">{symptom}</span>
                     </div>
                   ))}
                 </div>
                 <div className="mt-4 pt-4 border-t border-white/20">
-                  <p className="text-sm text-blue-200">
+                  <p className="text-sm text-blue-50">
                     <span className="font-semibold">Total symptoms:</span>{" "}
                     {prediction.symptoms.length}
                   </p>
@@ -246,42 +282,53 @@ const Result = () => {
                   <Heart className="w-5 h-5 mr-2" />
                   Vital Signs Recorded
                 </h3>
-                {prediction.vitalSigns && Object.values(prediction.vitalSigns).some((v) => v !== null && v !== undefined) ? (
+                {prediction.vitalSigns &&
+                Object.values(prediction.vitalSigns).some(
+                  (v) => v !== null && v !== undefined,
+                ) ? (
                   <div className="space-y-3">
                     {prediction.vitalSigns.heartRate && (
-                      <div className="flex items-center justify-between bg-white px-5 py-4 rounded-xl shadow-sm">
+                      <div className="flex items-center justify-between bg-white/10 text-white px-5 py-4 rounded-xl shadow-sm">
                         <div className="flex items-center space-x-3">
                           <Heart className="w-5 h-5 text-red-500" />
                           <span>Heart Rate</span>
                         </div>
-                        <span className="font-bold">{prediction.vitalSigns.heartRate} bpm</span>
+                        <span className="font-bold">
+                          {prediction.vitalSigns.heartRate} bpm
+                        </span>
                       </div>
                     )}
                     {prediction.vitalSigns.bloodPressure && (
-                      <div className="flex items-center justify-between bg-white px-5 py-4 rounded-xl shadow-sm">
+                      <div className="flex items-center justify-between bg-white/10 text-white px-5 py-4 rounded-xl shadow-sm">
                         <div className="flex items-center space-x-3">
                           <Droplets className="w-5 h-5 text-blue-500" />
                           <span>Blood Pressure</span>
                         </div>
-                        <span className="font-bold">{prediction.vitalSigns.bloodPressure}</span>
+                        <span className="font-bold">
+                          {prediction.vitalSigns.bloodPressure}
+                        </span>
                       </div>
                     )}
                     {prediction.vitalSigns.temperature && (
-                      <div className="flex items-center justify-between bg-white px-5 py-4 rounded-xl shadow-sm">
+                      <div className="flex items-center justify-between bg-white/10 text-white px-5 py-4 rounded-xl shadow-sm">
                         <div className="flex items-center space-x-3">
                           <Thermometer className="w-5 h-5 text-orange-500" />
                           <span>Temperature</span>
                         </div>
-                        <span className="font-bold">{prediction.vitalSigns.temperature}°C</span>
+                        <span className="font-bold">
+                          {prediction.vitalSigns.temperature}°C
+                        </span>
                       </div>
                     )}
                     {prediction.vitalSigns.oxygenLevel && (
-                      <div className="flex items-center justify-between bg-white px-5 py-4 rounded-xl shadow-sm">
+                      <div className="flex items-center justify-between bg-white/10 text-white px-5 py-4 rounded-xl shadow-sm">
                         <div className="flex items-center space-x-3">
                           <Wind className="w-5 h-5 text-green-500" />
                           <span>Oxygen Level</span>
                         </div>
-                        <span className="font-bold">{prediction.vitalSigns.oxygenLevel}%</span>
+                        <span className="font-bold">
+                          {prediction.vitalSigns.oxygenLevel}%
+                        </span>
                       </div>
                     )}
                   </div>
@@ -291,9 +338,10 @@ const Result = () => {
               </div>
             </div>
 
-            
             {prediction.mortalityRisk && (
-              <div className={`rounded-xl p-6 border-2 mb-6 ${getRiskColor(prediction.mortalityRisk.risk)}`}>
+              <div
+                className={`rounded-xl p-6 border-2 mb-6 ${getRiskColor(prediction.mortalityRisk.risk)}`}
+              >
                 <h3 className="font-semibold text-xl mb-4 flex items-center">
                   <AlertTriangle className="w-6 h-6 mr-2" />
                   Detailed Risk Assessment
@@ -301,45 +349,58 @@ const Result = () => {
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
                   <div className="text-center">
                     <p className="text-sm opacity-75 mb-2">Risk Category</p>
-                    <p className="text-3xl font-bold">{prediction.mortalityRisk.risk}</p>
+                    <p className="text-3xl font-bold">
+                      {prediction.mortalityRisk.risk}
+                    </p>
                   </div>
                   <div className="text-center">
                     <p className="text-sm opacity-75 mb-2">Risk Probability</p>
-                    <p className="text-3xl font-bold">{prediction.mortalityRisk.probability.toFixed(1)}%</p>
+                    <p className="text-3xl font-bold">
+                      {prediction.mortalityRisk.probability.toFixed(1)}%
+                    </p>
                   </div>
                   <div className="text-center">
                     <p className="text-sm opacity-75 mb-2">Confidence Score</p>
-                    <p className="text-3xl font-bold">{prediction.confidence}%</p>
+                    <p className="text-3xl font-bold">
+                      {prediction.confidence}%
+                    </p>
                   </div>
                 </div>
               </div>
             )}
 
-            
-            {prediction.recommendations && prediction.recommendations.length > 0 && (
-              <div className="bg-gradient-to-br from-blue-500 via-blue-600 to-blue-500 rounded-xl p-6 border border-primary-200">
-                <h3 className="font-semibold text-xl text-white mb-4 flex items-center">
-                  <FileText className="w-6 h-6 mr-2 text-white" />
-                  Health Recommendations
-                </h3>
-                <div className="space-y-3">
-                  {prediction.recommendations.map((recommendation, index) => (
-                    <div key={index}
-                      className="flex items-start bg-white p-4 rounded-lg border border-primary-100 hover:border-primary-300 transition-colors">
-                      <span className="flex-shrink-0 w-7 h-7 bg-primary-500 text-white rounded-full flex items-center justify-center text-sm font-bold mr-3 mt-0.5">
-                        {index + 1}
-                      </span>
-                      <div className="flex-1">
-                        <p className="text-gray-800 leading-relaxed">{recommendation}</p>
+            {prediction.recommendations &&
+              prediction.recommendations.length > 0 && (
+                <div className="bg-gradient-to-br from-blue-500 via-blue-600 to-blue-500 rounded-xl p-6 border border-primary-200">
+                  <h3 className="font-semibold text-xl text-white mb-4 flex items-center">
+                    <FileText className="w-6 h-6 mr-2 text-white" />
+                    Health Recommendations
+                  </h3>
+                  <div className="space-y-3">
+                    {prediction.recommendations.map((recommendation, index) => (
+                      <div
+                        key={index}
+                        className="flex items-start bg-white p-4 rounded-lg border border-primary-100 hover:border-primary-300 transition-colors"
+                      >
+                        <span className="flex-shrink-0 w-7 h-7 bg-primary-500 text-white rounded-full flex items-center justify-center text-sm font-bold mr-3 mt-0.5">
+                          {index + 1}
+                        </span>
+                        <div className="flex-1">
+                          <p className="text-gray-800 leading-relaxed">
+                            {recommendation}
+                          </p>
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
           </div>
 
-          
+          <EmergencySOS
+            predictedDisease={prediction.predictedDisease}
+            riskLevel={prediction.mortalityRisk?.risk}
+          />
           <div className="relative overflow-hidden bg-gradient-to-r from-blue-500 via-primary-700 to-blue-600 rounded-2xl p-6 mb-6 shadow-xl">
             <div className="relative flex flex-col sm:flex-row items-center justify-between gap-5">
               <div className="flex items-center space-x-4">
@@ -347,9 +408,12 @@ const Result = () => {
                   <Download className="w-7 h-7 text-white" />
                 </div>
                 <div>
-                  <h3 className="text-white font-bold text-xl leading-tight">Download Full Report</h3>
+                  <h3 className="text-white font-bold text-xl leading-tight">
+                    Download Full Report
+                  </h3>
                   <p className="text-blue-100 text-sm mt-0.5">
-                    Get a detailed PDF with diagnosis, vitals, risk analysis &amp; recommendations
+                    Get a detailed PDF with diagnosis, vitals, risk analysis
+                    &amp; recommendations
                   </p>
                 </div>
               </div>
@@ -362,9 +426,10 @@ const Result = () => {
                   transition-all duration-200 shadow-lg
                   focus:outline-none focus:ring-4 focus:ring-white focus:ring-opacity-40
                   disabled:cursor-not-allowed
-                  ${pdfSuccess
-                    ? "bg-green-400 text-white scale-105"
-                    : "bg-white text-primary-700 hover:bg-blue-50 hover:scale-105 active:scale-95 disabled:opacity-70"
+                  ${
+                    pdfSuccess
+                      ? "bg-green-400 text-white scale-105"
+                      : "bg-white text-primary-700 hover:bg-blue-50 hover:scale-105 active:scale-95 disabled:opacity-70"
                   }
                 `}
               >
@@ -388,20 +453,23 @@ const Result = () => {
             </div>
           </div>
 
-          
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
-
             
+
             <button
               onClick={handleNewAssessment}
               disabled={newPredLoading}
-              className="btn-primary bg-gradient-to-r from-blue-500 via-primary-700 to-blue-500 px-8 py-3 text-center shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 flex items-center justify-center space-x-2 disabled:opacity-70 disabled:cursor-not-allowed"
+              className="btn-primary bg-gradient-to-r from-blue-500 via-primary-700 to-blue-500 
+px-8 py-3 text-center shadow-lg hover:shadow-xl 
+hover:scale-105 active:scale-95 
+flex items-center justify-center space-x-2 
+border-0 dark:border dark:border-[#30363d] 
+disabled:opacity-70 disabled:cursor-not-allowed"
             >
               <Activity className="w-5 h-5" />
               <span>New Health Assessment</span>
             </button>
 
-            
             <button
               onClick={handleGoToDashboard}
               disabled={dashLoading}
@@ -412,7 +480,6 @@ const Result = () => {
             </button>
           </div>
 
-          
           <div className="bg-yellow-50 border-l-4 border-yellow-400 p-10 rounded-lg shadow-md">
             <div className="flex">
               <div className="flex-shrink-0">
@@ -423,10 +490,22 @@ const Result = () => {
                   Important Medical Disclaimer
                 </h3>
                 <div className="text-sm text-yellow-700 space-y-1">
-                  <p>• This prediction is generated by an AI system for informational purposes only</p>
-                  <p>• <strong>NOT a substitute</strong> for professional medical advice, diagnosis, or treatment</p>
-                  <p>• Always consult with qualified healthcare professionals for accurate diagnosis</p>
-                  <p>• In case of emergency, contact your local emergency services immediately</p>
+                  <p>
+                    • This prediction is generated by an AI system for
+                    informational purposes only
+                  </p>
+                  <p>
+                    • <strong>NOT a substitute</strong> for professional medical
+                    advice, diagnosis, or treatment
+                  </p>
+                  <p>
+                    • Always consult with qualified healthcare professionals for
+                    accurate diagnosis
+                  </p>
+                  <p>
+                    • In case of emergency, contact your local emergency
+                    services immediately
+                  </p>
                 </div>
               </div>
             </div>

@@ -188,7 +188,7 @@ const Login = () => {
               <button
                 type="submit"
                 disabled={loading || googleLoading}
-                className="w-full btn-primary bg-gradient-to-r from-blue-500 via-blue-600 to-blue-500 hover:scale-[1.02] active:scale-95 disabled:opacity-70 hover:shadow-md flex items-center justify-center space-x-2 disabled:cursor-not-allowed py-2.5 sm:py-3 text-sm sm:text-base"
+                className="w-full btn-primary bg-gradient-to-r from-blue-500 via-blue-600 to-blue-500 border-0 dark:border dark:border-[#30363d] hover:scale-[1.02] active:scale-95 disabled:opacity-70 hover:shadow-md flex items-center justify-center space-x-2 disabled:cursor-not-allowed py-2.5 sm:py-3 text-sm sm:text-base"
               >
                 {loading ? (
                   <>

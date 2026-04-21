@@ -335,7 +335,7 @@ const Dashboard = () => {
                   <YAxis tick={{ fontSize: 12 }} />
                   <Tooltip />
                   <Legend />
-                  <Bar dataKey="count" name="Predictions Count">
+                  <Bar dataKey="count" name="Predictions Count" fill="#3b82f6">
                     {riskChartData.map((entry, i) => (
                       <Cell key={i} fill={COLORS[entry.name]} />
                     ))}

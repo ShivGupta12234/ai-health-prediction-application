@@ -88,7 +88,13 @@ const ProfileEdit = () => {
           
           <div className="mb-6">
             <Link to="/dashboard"
-              className="inline-flex items-center space-x-2 bg-gradient-to-r from-blue-500 via-blue-700 to-blue-500 text-white px-6 py-3 rounded-xl font-semibold hover:scale-[1.02] active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed transition-all shadow-md hover:shadow-lg">
+              className="inline-flex items-center space-x-2 
+bg-gradient-to-r from-blue-500 via-blue-700 to-blue-500 text-white 
+px-6 py-3 rounded-xl font-semibold 
+hover:scale-[1.02] active:scale-95 
+transition-all shadow-md hover:shadow-lg
+border-0 dark:border dark:border-[#30363d]
+disabled:opacity-60 disabled:cursor-not-allowed">
               <ArrowLeft className="w-4 h-4" />
               <span>Back to Dashboard</span>
             </Link>
@@ -231,7 +237,13 @@ const ProfileEdit = () => {
               
               <div className="flex flex-col sm:flex-row gap-3 pt-2">
                 <button type="submit" disabled={loading || success}
-                  className="flex-1 flex items-center justify-center space-x-2 bg-gradient-to-r from-blue-500 via-blue-700 to-blue-500 text-white px-6 py-3 rounded-xl font-semibold hover:scale-[1.02] active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed transition-all shadow-md hover:shadow-lg">
+                  className="flex-1 flex items-center justify-center space-x-2 
+bg-gradient-to-r from-blue-500 via-blue-700 to-blue-500 text-white 
+px-6 py-3 rounded-xl font-semibold 
+hover:scale-[1.02] active:scale-95 
+transition-all shadow-md hover:shadow-lg
+border-0 dark:border dark:border-[#30363d]
+disabled:opacity-60 disabled:cursor-not-allowed">
                   {loading ? (
                     <>
                       <Loader2 className="w-5 h-5 animate-spin" />
