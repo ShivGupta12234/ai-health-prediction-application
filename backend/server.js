@@ -3,7 +3,7 @@ const cors      = require("cors");
 const helmet    = require("helmet");
 const dotenv    = require("dotenv");
 const connectDB = require("./config/db");
-
+const rateLimit = require("express-rate-limit");
 dotenv.config();
 
 
@@ -11,9 +11,12 @@ dotenv.config();
 
 const app = express();
 
-
-app.use(helmet());
-
+app.use(
+  helmet({
+    crossOriginOpenerPolicy: false,
+    crossOriginEmbedderPolicy: false,
+  })
+);
 
 const allowedOrigins = [
   "http://localhost:3000",
@@ -25,13 +28,20 @@ const allowedOrigins = [
 ].filter(Boolean);
 
 app.use(
+  "/api/ai",
+  rateLimit({
+    windowMs: 60 * 1000,
+    max: 20,
+  })
+);
+app.use(
   cors({
     origin: (origin, callback) => {
       if (!origin) return callback(null, true);
       if (allowedOrigins.includes(origin) || origin.endsWith(".vercel.app"))
         return callback(null, true);
 
-
+      
       return callback(new Error(`CORS blocked: ${origin}`));
     },
     credentials: true,
@@ -41,8 +51,10 @@ app.use(
 );
 
 
+
 app.use(express.json({ limit: "5mb" }));
 app.use(express.urlencoded({ extended: true, limit: "5mb" }));
+
 
 
 try {
@@ -58,6 +70,8 @@ try {
 } catch {
   console.log("xss-clean not installed — skipping");
 }
+
+
 
 
 try {
@@ -97,8 +111,10 @@ try {
 }
 
 
+
 const authRoutes       = require("./routes/authRoutes");
 const predictionRoutes = require("./routes/predictionRoutes");
+const aiRoutes         = require("./routes/aiRoutes");
 
 app.get("/api/health", (req, res) => {
   res.json({
@@ -112,11 +128,14 @@ app.get("/api/health", (req, res) => {
 
 app.use("/api/auth", authRoutes);
 app.use("/api/predictions", predictionRoutes);
+app.use("/api/ai", aiRoutes); 
+
 
 
 app.use((req, res) => {
   res.status(404).json({ message: "Route not found" });
 });
+
 
 
 app.use((err, req, res, next) => {

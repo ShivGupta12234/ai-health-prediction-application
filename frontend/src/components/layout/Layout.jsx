@@ -6,6 +6,7 @@ import { Activity, Heart, Code, Globe } from "lucide-react";
 import { useAuth } from "../../contexts/AuthContext";
 import ConfirmModal from "../common/ConfirmModal";
 import LoadingOverlay from "../common/LoadingOverlay";
+import Chatbot from "../common/Chatbot";
 
 const Layout = () => {
   const { user, logout } = useAuth();
@@ -349,6 +350,8 @@ const Layout = () => {
         cancelLabel="No, Stay"
         variant="danger"
       />
+
+      <Chatbot />
     </div>
   );
 };
