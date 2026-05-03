@@ -1,9 +1,9 @@
 import sys
 import os
 
-print("="*60)
+print("=" * 60)
 print("🚀 Starting HealthMateAI ML Server...")
-print("="*60)
+print("=" * 60)
 
 
 
@@ -15,6 +15,7 @@ MODELS_DIR = os.path.join(BASE_DIR, "models")
 
 print(f"📂 Base Dir: {BASE_DIR}")
 print(f"📂 Models Dir: {MODELS_DIR}")
+
 
 
 
@@ -42,16 +43,20 @@ CORS(app)
 
 
 
+MODEL_LOADED = False
+
 try:
     disease_model = joblib.load(os.path.join(MODELS_DIR, "disease_model.pkl"))
     label_encoder = joblib.load(os.path.join(MODELS_DIR, "label_encoder.pkl"))
     symptom_columns = joblib.load(os.path.join(MODELS_DIR, "symptom_columns.pkl"))
     risk_model = joblib.load(os.path.join(MODELS_DIR, "risk_model.pkl"))
 
+    MODEL_LOADED = True
     print("✅ Models loaded successfully")
+
 except Exception as e:
     print(f"❌ Model loading failed: {e}")
-    sys.exit(1)
+    MODEL_LOADED = False  # DO NOT crash server
 
 
 
@@ -61,8 +66,7 @@ except Exception as e:
 def health():
     return jsonify({
         "status": "healthy",
-        "symptoms": len(symptom_columns),
-        "diseases": len(label_encoder.classes_)
+        "modelLoaded": MODEL_LOADED
     })
 
 
@@ -73,6 +77,14 @@ def health():
 @app.route("/predict", methods=["POST"])
 def predict():
     try:
+        if not MODEL_LOADED:
+            return jsonify({
+                "error": "Model not available",
+                "predictedDisease": "Unavailable",
+                "confidence": 0,
+                "mlEnhanced": False
+            }), 503
+
         data = request.get_json()
 
         if not data or "symptoms" not in data:
@@ -80,9 +92,7 @@ def predict():
 
         raw_symptoms = data.get("symptoms", [])
 
-
-
-
+        # ✅ CLEAN INPUT
         symptoms = [
             normalize_symptom(str(s))
             for s in raw_symptoms
@@ -94,11 +104,7 @@ def predict():
 
         print(f"📊 Symptoms: {symptoms}")
 
-
-
-
-
-
+       
         vector = prepare_symptom_vector(symptoms, symptom_columns)
         vector = vector.reshape(1, -1)
 
@@ -108,6 +114,7 @@ def predict():
         disease = label_encoder.inverse_transform([pred_idx])[0]
         confidence = calculate_confidence(probs)
 
+        # Top 3 predictions
         top_idx = np.argsort(probs)[-3:][::-1]
         top_preds = [
             {
