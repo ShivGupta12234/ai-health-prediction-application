@@ -9,7 +9,37 @@ frontend/.env.development
 frontend/.env.production
 backend/.env.local
 backend/.env
+# Node
+node_modules/
 
+# Env
+.env
+.env.*
+
+# Python
+__pycache__/
+*.pyc
+
+# ML models (optional — see below)
+# models/*.pkl
+
+# Junk folders
+archive/
+dataset used/
+healthmateai-export/
+reports_doc_file/
+
+# ML unnecessary files
+ml-model/data/
+ml-model/notebooks/
+ml-model/test_*.py
+
+# Optional (keep models for now)
+# ml-model/models/*.pkl
+# OS files
+.DS_Store
+Thumbs.db
+start-dev.bat
 # Build outputs
 dist/
 build/
