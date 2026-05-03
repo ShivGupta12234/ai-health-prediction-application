@@ -130,7 +130,7 @@ const callMLModel = async (symptoms) => {
     const response = await axios.post(
       `${ML_API_URL}/predict`,
       { symptoms },
-      { timeout: 8000 }
+      { timeout: 25000 }
     );
 
     if (!response.data || !response.data.predictedDisease) {
