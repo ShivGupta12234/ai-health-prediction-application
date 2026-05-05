@@ -77,3 +77,7 @@ temp/
 backend/.env
 frontend/.env
 EOF
+archive/
+healthmateai-export/
+reports_doc_file/
+start-dev.bat
