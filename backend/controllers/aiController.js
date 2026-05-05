@@ -200,7 +200,8 @@ Be helpful, safe, and human-like — while strictly following rules.
       });
     }
 
-    const reply =
+    // ✅ FIX: was `const` — cannot reassign a const. Changed to `let`.
+    let reply =
       response.data?.choices?.[0]?.message?.content?.trim() ||
       "I'm not confident enough to answer that safely.";
     const unsafeWords = [
