@@ -160,7 +160,7 @@ const callHuggingFace = async (symptomsText) => {
         Authorization: `Bearer ${HF_API_KEY}`,
 
       },
-      timeout: 15000,
+      timeout: 30000,
     }
   );
 
