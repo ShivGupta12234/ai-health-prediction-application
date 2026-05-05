@@ -194,7 +194,10 @@ const callHuggingFace = async (symptomsText) => {
 
 const predictDisease = async (symptoms) => {
   if (!symptoms || symptoms.length === 0) {
-    return ruleBasedPrediction([]);
+    return {
+      ...ruleBasedPrediction([]),
+      confidence: 60,
+    };
   }
 
   const cleanedSymptoms = symptoms.map((s) =>
@@ -203,27 +206,41 @@ const predictDisease = async (symptoms) => {
 
   const symptomsText = cleanedSymptoms.join(", ");
 
- 
-  try {
-    const mlResult = await callMLModel(cleanedSymptoms);
-    console.log("✅ ML Model Success:", mlResult.disease);
-    return mlResult;
-  } catch {}
 
-  
   if (HF_API_KEY) {
     try {
+      console.log("🚀 Calling HuggingFace...");
       const hfResult = await callHuggingFace(symptomsText);
+
       console.log("✅ HF Success:", hfResult.disease);
-      return hfResult;
+
+      return {
+        ...hfResult,
+        confidence: hfResult.confidence || 70,
+      };
     } catch (err) {
       console.log("❌ HF failed:", err.message);
     }
   }
 
- 
+  
+  try {
+    const mlResult = await callMLModel(cleanedSymptoms);
+    console.log("✅ ML Model Success:", mlResult.disease);
+    return mlResult;
+  } catch (err) {
+    console.log("❌ ML failed:", err.message);
+  }
+
+  
   console.log("⚠️ Using Rule-Based fallback");
-  return ruleBasedPrediction(cleanedSymptoms);
+
+  const fallback = ruleBasedPrediction(cleanedSymptoms);
+
+  return {
+    ...fallback,
+    confidence: fallback.confidence || 65,
+  };
 };
 
 module.exports = {
