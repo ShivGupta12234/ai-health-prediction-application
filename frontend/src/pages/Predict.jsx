@@ -30,6 +30,7 @@ const Predict = () => {
   
 
   const [backLoading, setBackLoading] = useState(false);
+  const [showVitalsWarning, setShowVitalsWarning] = useState(false);
 
   const handleBackToDashboard = () => {
     if (backLoading || loading) return;
@@ -131,6 +132,20 @@ const Predict = () => {
       setError("Please enter at least one symptom");
       return;
     }
+
+    // Check if vitals are empty — warn user but allow them to proceed
+    const hasVitals =
+      vitalSigns.heartRate ||
+      vitalSigns.bloodPressure ||
+      vitalSigns.temperature ||
+      vitalSigns.oxygenLevel;
+
+    if (!hasVitals && !showVitalsWarning) {
+      setShowVitalsWarning(true);
+      return;
+    }
+
+    setShowVitalsWarning(false);
     setLoading(true);
 
     try {
@@ -168,6 +183,66 @@ const Predict = () => {
         isVisible={backLoading}
         message="Redirecting to your dashboard..."
       />
+
+      {/* Vitals Warning Modal */}
+      {showVitalsWarning && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-8 border-2 border-orange-200">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-12 h-12 rounded-full bg-orange-100 flex items-center justify-center flex-shrink-0">
+                <AlertCircle className="w-7 h-7 text-orange-500" />
+              </div>
+              <div>
+                <h2 className="text-xl font-bold text-gray-900">Vital Signs Missing</h2>
+                <p className="text-sm text-gray-500">Your prediction will be less accurate</p>
+              </div>
+            </div>
+            <p className="text-gray-700 text-sm mb-2">
+              You have not entered any vital signs. Vital signs such as heart rate, blood pressure,
+              temperature, and oxygen level significantly improve:
+            </p>
+            <ul className="text-sm text-gray-600 mb-5 space-y-1 ml-4">
+              <li>✅ Disease prediction accuracy</li>
+              <li>✅ Health score calculation</li>
+              <li>✅ Risk level assessment</li>
+              <li>✅ Personalized recommendations</li>
+            </ul>
+            <p className="text-sm font-medium text-orange-600 mb-6">
+              We strongly recommend entering your vitals before proceeding.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-3">
+              <button
+                onClick={() => setShowVitalsWarning(false)}
+                className="flex-1 px-5 py-3 rounded-xl font-semibold text-white bg-gradient-to-r from-blue-500 via-primary-700 to-blue-500 hover:scale-105 active:scale-95 transition-all shadow-md"
+              >
+                Enter Vitals First
+              </button>
+              <button
+                onClick={async () => {
+                  setShowVitalsWarning(false);
+                  setLoading(true);
+                  try {
+                    const filteredSymptoms = symptoms.filter((s) => s.trim() !== "");
+                    const predictionData = {
+                      symptoms: filteredSymptoms,
+                      vitalSigns: { heartRate: null, bloodPressure: null, temperature: null, oxygenLevel: null },
+                    };
+                    const response = await predictionsAPI.create(predictionData);
+                    navigate("/result", { state: { prediction: response.data } });
+                  } catch (err) {
+                    setError(err.response?.data?.message || "Failed to create prediction. Please try again.");
+                  } finally {
+                    setLoading(false);
+                  }
+                }}
+                className="flex-1 px-5 py-3 rounded-xl font-semibold text-orange-600 bg-orange-50 border-2 border-orange-300 hover:bg-orange-100 transition-all"
+              >
+                Proceed Anyway
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="min-h-screen bg-gradient-to-r from-gray-100 via-blue-50 to-blue-100 py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto">
