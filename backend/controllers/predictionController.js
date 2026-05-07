@@ -35,7 +35,7 @@ exports.createPrediction = async (req, res) => {
       oxygenLevel:   vitalSigns && vitalSigns.oxygenLevel   ? Number(vitalSigns.oxygenLevel)   : null,
     };
 
-    const diseaseResult = await predictDisease(filteredSymptoms);
+    const diseaseResult = await predictDisease(filteredSymptoms, safeVitalSigns);
 
     const mortalityRisk = calculateMortalityRisk(
       safeVitalSigns,
